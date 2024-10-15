@@ -11,6 +11,8 @@ export class CorsService {
 
   getOptions() {
     const clientBaseUrl = this.configurationService.getClientBaseUrl()
+    const clientBaseUrlAppSlug =
+      this.configurationService.getClientBaseUrlAppSlug()
 
     const options: Record<ConfigurationServiceObject.Environment, CorsOptions> =
       {
@@ -19,7 +21,7 @@ export class CorsService {
           credentials: true,
         },
         [ConfigurationServiceObject.Environment.PRODUCTION]: {
-          origin: clientBaseUrl,
+          origin: [clientBaseUrl, clientBaseUrlAppSlug],
           credentials: true,
         },
       }

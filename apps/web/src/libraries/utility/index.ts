@@ -39,6 +39,10 @@ export namespace Utility {
   }
 
   export function stringToInitials(content: string): string {
+    if (isNull(content)) {
+      return ''
+    }
+
     const words = content.trim().split(' ')
 
     const isOneWord = words.length === 1

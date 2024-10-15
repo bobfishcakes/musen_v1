@@ -8,15 +8,23 @@ import { useEffect } from 'react'
 /**
  * Emit request when the path changed
  */
-export const useMessageSend = () => {
+export const useMessageSend = (isActive = false) => {
   const pathname = usePathname()
   const params: any = useParams()
 
   useEffect(() => {
+    if (!isActive) {
+      return
+    }
+
     window.parent.postMessage({ type: 'ready' }, '*')
   }, [])
 
   useEffect(() => {
+    if (!isActive) {
+      return
+    }
+
     const url = `${window.location.origin}${pathname}`
 
     const pathPure = RouterService.restoreUrl(pathname, params)
@@ -28,7 +36,7 @@ export const useMessageSend = () => {
 /**
  * Change the path on request
  */
-export const useMessageReceived = () => {
+export const useMessageReceived = (isActive = false) => {
   const router = useRouter()
 
   const handleMessage = event => {
@@ -45,6 +53,10 @@ export const useMessageReceived = () => {
   }
 
   useEffect(() => {
+    if (!isActive) {
+      return
+    }
+
     window.addEventListener('message', handleMessage)
 
     return () => {

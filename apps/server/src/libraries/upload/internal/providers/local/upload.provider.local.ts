@@ -15,7 +15,7 @@ import { Logger, LoggerService } from '../../../../logger'
 
 @Injectable()
 export class UploadProviderLocal extends UploadProvider {
-  static path = '/upload-local'
+  static path = '/api-static'
 
   static setup() {
     return ServeStaticModule.forRoot({

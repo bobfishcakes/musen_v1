@@ -69,23 +69,37 @@ export class DatabaseHelper {
   ): void {
     const includes = (queryOptions.includes ?? []) as string[]
 
+    const store = {}
+
     includes.forEach((relation, relationIndex) => {
       const keys = relation.split('.')
 
+      const keysParent = []
+
       keys.forEach((key, keyIndex) => {
-        const suffix = `${relationIndex}_${keyIndex}`
-        const keyUnique = `${key}_${suffix}`
+        const keyUnique = `${key}_${relationIndex}_${keyIndex}`
 
         const isRoot = keyIndex === 0
 
         if (isRoot) {
-          query.leftJoinAndSelect(`entity.${key}`, `${keyUnique}`)
-        } else {
-          const suffixParent = `${relationIndex}_${keyIndex - 1}`
-          const keyUniqueParent = `${keys[keyIndex - 1]}_${suffixParent}`
+          const canJoin = Utility.isNull(store[key])
 
-          query.leftJoinAndSelect(`${keyUniqueParent}.${key}`, `${keyUnique}`)
+          if (canJoin) {
+            query.leftJoinAndSelect(`entity.${key}`, `${keyUnique}`)
+
+            store[key] = keyUnique
+          }
+        } else {
+          const keyParent = keysParent.join('.')
+
+          const keyParentUnique = store[keyParent]
+
+          query.leftJoinAndSelect(`${keyParentUnique}.${key}`, `${keyUnique}`)
+
+          store[`${keyParent}.${key}`] = keyUnique
         }
+
+        keysParent.push(key)
       })
     })
   }
@@ -152,6 +166,16 @@ export class DatabaseHelper {
       key: string
       value: any
     }[] = []
+
+    if (filter === null) {
+      conditions.push({
+        condition: `entity.${key} IS NULL`,
+        key: `${key}EQ`,
+        value: null,
+      })
+
+      return conditions
+    }
 
     if (Utility.isDefined(filter.eq)) {
       conditions.push({

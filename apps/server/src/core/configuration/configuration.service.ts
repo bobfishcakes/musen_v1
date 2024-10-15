@@ -75,6 +75,14 @@ export class ConfigurationService {
     return valueClean
   }
 
+  getClientBaseUrlAppSlug(): string {
+    const value = this.manager.get(
+      ConfigurationServiceObject.Key.SERVER_CLIENT_BASE_URL_APP_SLUG,
+    )
+
+    return value
+  }
+
   getBaseUrl(): string {
     const port = this.getPort()
 
@@ -87,6 +95,17 @@ export class ConfigurationService {
     const valueClean = Utility.removeTrailingSlash(value)
 
     return valueClean
+  }
+
+  getDashboardBaseUrl(): string {
+    const valueDefault = `http://localhost:3001/api`
+    const valueProduction = `https://api.marblism.com/api`
+
+    if (this.isEnvironmentProduction()) {
+      return valueProduction
+    }
+
+    return valueDefault
   }
 
   isEnvironmentDevelopment(): boolean {

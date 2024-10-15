@@ -1,3 +1,4 @@
+import { Snackbar } from '@web/designSystem'
 import { HttpError } from '../http.error'
 
 interface ConstructorOptions {
@@ -138,9 +139,23 @@ export class HttpClient {
     } else {
       const error = new HttpError(response.status, data)
 
+      this.handleError(data)
+
       await this.runMiddlewares(response, this.middlewaresOnError, error)
 
       throw error
+    }
+  }
+
+  private async handleError(errorData: any) {
+    const { data } = errorData
+
+    if (Array.isArray(data)) {
+      const details = data.join('\n')
+
+      Snackbar.Instance.enqueueSnackbar(details, {
+        variant: 'error',
+      })
     }
   }
 

@@ -7,6 +7,9 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { Injectable } from '@nestjs/common'
 import { ConfigurationService } from '@server/core/configuration'
+import { DateHelper } from '@server/helpers/date'
+import { Utility } from '@server/helpers/utility'
+import { HttpService } from '@server/libraries/http'
 import {
   FromPrivateToPublicUrlOptions,
   UploadPrivateOptions,
@@ -20,21 +23,44 @@ import { Logger, LoggerService } from '../../../../logger'
 const ONE_HOUR_IN_SECONDS = 60 * 60
 
 type Bucket = {
-  name: string
   dateCreation: Date
+  name: string
+}
+
+type Credentials = {
+  accessKeyId: string
+  secretAccessKey: string
+  sessionToken: string
+  expiration: Date
+}
+
+type CredentialsResponse = {
+  accessKeyId: string
+  secretAccessKey: string
+  sessionToken: string
+  expiration: string
+  bucketNamePrivate: string
+  bucketNamePublic: string
+  bucketKey: string
 }
 
 @Injectable()
 export class UploadProviderAws extends UploadProvider {
+  private static isMarblismInitialised: boolean = false
+
   private logger: Logger
   private client: S3Client
-  private bucketPublicName: string
-  private bucketPrivateName: string
+  private bucketNamePublic: string
+  private bucketNamePrivate: string
   private region: string
+  private credentials: Credentials
+  private marblismApiKey: string
+  private bucketKey: string
 
   constructor(
     private loggerService: LoggerService,
     private configurationService: ConfigurationService,
+    private httpService: HttpService,
   ) {
     super()
 
@@ -42,6 +68,35 @@ export class UploadProviderAws extends UploadProvider {
   }
 
   public async initialise() {
+    this.region = this.configurationService.get(
+      `SERVER_UPLOAD_AWS_REGION`,
+      'us-west-1',
+    )
+
+    try {
+      this.marblismApiKey = this.configurationService.get(
+        `SERVER_UPLOAD_MARBLISM_API_KEY`,
+      )
+
+      if (Utility.isDefined(this.marblismApiKey)) {
+        if (UploadProviderAws.isMarblismInitialised) {
+          return
+        }
+
+        await this.initializeWithMarblism()
+
+        this.logger.success(
+          `AWS library (Marblism) active in region ${this.region}`,
+        )
+
+        UploadProviderAws.isMarblismInitialised = true
+
+        return
+      }
+    } catch (error) {
+      this.logger.warning(`AWS library (Marblism) failed to start`)
+    }
+
     try {
       const accessKey = this.configurationService.get(
         `SERVER_UPLOAD_AWS_ACCESS_KEY`,
@@ -68,26 +123,21 @@ export class UploadProviderAws extends UploadProvider {
         )
       }
 
-      this.region = this.configurationService.get(
-        `SERVER_UPLOAD_AWS_REGION`,
-        'us-east-1',
-      )
-
-      this.bucketPublicName = this.configurationService.get(
+      this.bucketNamePublic = this.configurationService.get(
         `SERVER_UPLOAD_AWS_BUCKET_PUBLIC_NAME`,
       )
 
-      if (!this.bucketPublicName) {
+      if (!this.bucketNamePublic) {
         this.logger.warning(
           `Set SERVER_UPLOAD_AWS_BUCKET_PUBLIC_NAME in your .env to activate a public bucket with infinite urls`,
         )
       }
 
-      this.bucketPrivateName = this.configurationService.get(
+      this.bucketNamePrivate = this.configurationService.get(
         `SERVER_UPLOAD_AWS_BUCKET_PRIVATE_NAME`,
       )
 
-      if (!this.bucketPrivateName) {
+      if (!this.bucketNamePrivate) {
         this.logger.warning(
           `Set SERVER_UPLOAD_AWS_BUCKET_PRIVATE_NAME in your .env to activate a private bucket with signed urls`,
         )
@@ -106,38 +156,118 @@ export class UploadProviderAws extends UploadProvider {
       this.logger.success(`AWS library active in region ${this.region}`)
     } catch (error) {
       this.logger.warning(`AWS library failed to start`)
+
       throw new Error(error)
     }
+  }
+
+  private async initializeWithMarblism() {
+    const dashboardBaseUrl = this.configurationService.getDashboardBaseUrl()
+
+    const url = `${dashboardBaseUrl}/v1/addons/upload/create-credentials`
+
+    this.httpService.setApiKey(this.marblismApiKey)
+
+    const response = await this.httpService.post<CredentialsResponse>(url, {})
+
+    this.bucketNamePrivate = response.bucketNamePrivate
+    this.bucketNamePublic = `${response.bucketNamePublic}`
+
+    this.credentials = {
+      accessKeyId: response.accessKeyId,
+      secretAccessKey: response.secretAccessKey,
+      sessionToken: response.sessionToken,
+      expiration: new Date(response.expiration),
+    }
+
+    this.bucketKey = response.bucketKey
+
+    this.client = new S3Client({
+      region: this.region,
+      credentials: {
+        accessKeyId: this.credentials.accessKeyId,
+        secretAccessKey: this.credentials.secretAccessKey,
+        sessionToken: this.credentials.sessionToken,
+      },
+    })
+
+    await this.check()
+  }
+
+  private async ensureCredentials() {
+    if (!UploadProviderAws.isMarblismInitialised) {
+      return
+    }
+
+    if (this.areCredentialsValid()) {
+      return
+    }
+
+    const dashboardBaseUrl = this.configurationService.getDashboardBaseUrl()
+
+    const url = `${dashboardBaseUrl}/v1/addons/upload/refresh-credentials`
+
+    this.httpService.setApiKey(this.marblismApiKey)
+
+    const response = await this.httpService.post<CredentialsResponse>(url, {})
+
+    this.credentials = {
+      accessKeyId: response.accessKeyId,
+      secretAccessKey: response.secretAccessKey,
+      sessionToken: response.sessionToken,
+      expiration: new Date(response.expiration),
+    }
+
+    this.client = new S3Client({
+      region: this.region,
+      credentials: {
+        accessKeyId: this.credentials.accessKeyId,
+        secretAccessKey: this.credentials.secretAccessKey,
+        sessionToken: this.credentials.sessionToken,
+      },
+    })
+
+    await this.check()
+  }
+
+  private areCredentialsValid(): boolean {
+    const isTokenDefined = Utility.isDefined(this.credentials)
+
+    const isTokenValid =
+      isTokenDefined &&
+      DateHelper.isBefore(DateHelper.getNow(), this.credentials.expiration)
+
+    return isTokenValid
   }
 
   private async check(): Promise<void> {
     const buckets = await this.listBuckets()
 
-    if (this.bucketPrivateName) {
-      this.logger.log(`Checking bucket "${this.bucketPrivateName}"...`)
+    if (this.bucketNamePrivate) {
+      this.logger.log(`Checking bucket "${this.bucketNamePrivate}"...`)
 
       const bucket = buckets.find(
-        bucket => bucket.name === this.bucketPrivateName,
+        bucket => bucket.name === this.bucketNamePrivate,
       )
 
       if (bucket) {
-        this.logger.success(`Bucket "${this.bucketPrivateName}" is active`)
+        this.logger.success(`Bucket "${this.bucketNamePrivate}" is active`)
       } else {
-        throw new Error(`Bucket "${this.bucketPrivateName}" was not found`)
+        throw new Error(`Bucket "${this.bucketNamePrivate}" was not found`)
       }
     }
 
-    if (this.bucketPublicName) {
-      this.logger.log(`Checking bucket "${this.bucketPublicName}"...`)
+    if (this.bucketNamePublic) {
+      this.logger.log(`Checking bucket "${this.bucketNamePublic}"...`)
 
       const bucket = buckets.find(
-        bucket => bucket.name === this.bucketPublicName,
+        bucket => bucket.name === this.bucketNamePublic,
       )
 
       if (bucket) {
-        this.logger.success(`Bucket "${this.bucketPublicName}" is active`)
+        this.logger.success(`Bucket "${this.bucketNamePublic}" is active`)
       } else {
-        throw new Error(`Bucket "${this.bucketPublicName}" was not found`)
+        throw new Error(`Bucket "${this.bucketNamePublic}" was not found`)
       }
     }
   }
@@ -145,15 +275,19 @@ export class UploadProviderAws extends UploadProvider {
   public async uploadPublic(
     options: UploadPublicOptions,
   ): Promise<UploadPublicReturn> {
+    await this.ensureCredentials()
+
     const { file } = options
 
-    const key = this.ensureFilename(file.originalname)
+    let key = this.ensureFilename(file.originalname)
+
+    key = this.ensureKey(key)
 
     const command = new PutObjectCommand({
-      Bucket: `${this.bucketPublicName}`,
-      Key: this.ensureKey(key),
+      Bucket: `${this.bucketNamePublic}`,
+      Key: key,
       Body: file.buffer,
-      ContentType: file.mimetype ?? 'image/png',
+      ContentType: file.mimetype,
     })
 
     try {
@@ -173,15 +307,17 @@ export class UploadProviderAws extends UploadProvider {
   public async uploadPrivate(
     options: UploadPrivateOptions,
   ): Promise<UploadPrivateReturn> {
+    await this.ensureCredentials()
+
     const { file } = options
 
     const key = this.ensureFilename(file.originalname)
 
     const command = new PutObjectCommand({
-      Bucket: `${this.bucketPrivateName}`,
+      Bucket: `${this.bucketNamePrivate}`,
       Key: this.ensureKey(key),
       Body: file.buffer,
-      ContentType: file.mimetype ?? 'image/png',
+      ContentType: file.mimetype,
     })
 
     try {
@@ -206,10 +342,12 @@ export class UploadProviderAws extends UploadProvider {
       throw new Error(`${url} must be a private url`)
     }
 
+    await this.ensureCredentials()
+
     const key = this.extractKeyFromUrlPrivate(url)
 
     const params = {
-      Bucket: `${this.bucketPrivateName}`,
+      Bucket: `${this.bucketNamePrivate}`,
       Key: this.ensureKey(key),
     }
 
@@ -238,21 +376,29 @@ export class UploadProviderAws extends UploadProvider {
   }
 
   private getBaseUrlPrivate(): string {
-    return `https://${this.bucketPrivateName}.s3.${this.region}.amazonaws.com`
+    return `https://${this.bucketNamePrivate}.s3.${this.region}.amazonaws.com`
   }
 
   private getBaseUrlPublic(): string {
-    return `https://${this.bucketPublicName}.s3.${this.region}.amazonaws.com`
+    return `https://${this.bucketNamePublic}.s3.${this.region}.amazonaws.com`
   }
 
   private ensureKey(key: string): string {
-    const isPrefixed = key.startsWith('/')
+    let keyClean = key
 
-    if (isPrefixed) {
-      return key.slice(1)
+    const isPrefixedSlash = keyClean.startsWith('/')
+
+    if (isPrefixedSlash) {
+      keyClean = keyClean.slice(1)
     }
 
-    return key
+    const isPrefixedBucketKey = keyClean.startsWith(this.bucketKey)
+
+    if (!isPrefixedBucketKey) {
+      keyClean = `${this.bucketKey}/${keyClean}`
+    }
+
+    return keyClean
   }
 
   private isUrlPrivate(url: string): boolean {

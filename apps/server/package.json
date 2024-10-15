@@ -19,7 +19,6 @@
     "start": "node dist/main",
     "check": "tsc",
     "check:dependencies": "ts-node -r tsconfig-paths/register ./scripts/check-dependencies.ts",
-    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "docker:init": "docker compose -p marblism-app up -d",
     "database:init": "npm run database:schema:destroy && npm run database:schema:create",

@@ -16,6 +16,7 @@ lerna-debug.log*
 
 # Temp uploads
 /upload-local
+/api-static
 /uploads
 
 # Tests
