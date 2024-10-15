@@ -1,6 +1,8 @@
 'use client'
 
-import { AudioOutlined, UserOutlined } from '@ant-design/icons'
+import { UserOutlined } from '@ant-design/icons'
+import * as solidIcons from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api, Model } from '@web/domain'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
@@ -86,13 +88,26 @@ export default function HomePage() {
               renderItem={event => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar icon={<AudioOutlined />} />}
+                    avatar={
+                      <FontAwesomeIcon icon={solidIcons.faMicrophoneLines} />
+                    }
                     title={
-                      <span style={{ fontSize: '24px' }}>{event.name}</span>
+                      <>
+                        <span style={{ fontSize: '22px' }}>{event.name}</span>
+                        <br />
+                        <span
+                          style={{ fontSize: '16px', fontWeight: 'normal' }}
+                        >
+                          {event.description} <span />
+                        </span>
+                      </>
                     }
                     description={
-                      <span style={{ fontSize: '20px' }}>
-                        {dayjs(event.startTime).format('MMMM D, YYYY')}
+                      <span style={{ fontSize: '16px' }}>
+                        {'Event started at ' +
+                          dayjs(event.startTime).format('h:mm A') +
+                          ', expected to end at ' +
+                          dayjs(event.endTime).format('h:mm A')}
                       </span>
                     }
                   />
@@ -148,7 +163,7 @@ export default function HomePage() {
               renderItem={stream => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar icon={<AudioOutlined />} />}
+                    avatar={<FontAwesomeIcon icon={solidIcons.faMicrophone} />}
                     title={
                       <span style={{ fontSize: '18px' }}>
                         {stream.sportingEvent?.name}

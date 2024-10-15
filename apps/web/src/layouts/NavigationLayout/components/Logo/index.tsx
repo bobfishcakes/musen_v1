@@ -11,7 +11,6 @@ export const Logo: React.FC<Props> = ({
   ...props
 }) => {
   const router = useRouter()
-
   const goTo = (url: string) => {
     router.push(url)
   }
@@ -19,9 +18,10 @@ export const Logo: React.FC<Props> = ({
   return (
     <>
       <img
-        src="https://marblism-dashboard-api--production-public.s3.us-west-1.amazonaws.com/9CeaTw-musenv1-G4nf"
-        height={width}
-        width={height}
+        src="/musen_official_logo.png"
+        width={width}
+        height={height}
+        className="rounded-lg"
         style={{
           borderRadius: '10px',
           cursor: 'pointer',
