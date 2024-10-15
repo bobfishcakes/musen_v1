@@ -1,4 +1,4 @@
-import { SnackbarProvider } from 'notistack'
+import { OptionsObject, ProviderContext, SnackbarProvider } from 'notistack'
 import React, { ReactNode } from 'react'
 
 /**
@@ -10,6 +10,28 @@ import React, { ReactNode } from 'react'
 
  */
 export namespace Snackbar {
+  export class Instance {
+    private static isSetup = false
+    private static enqueueSnackbarRef: ProviderContext['enqueueSnackbar']
+
+    static async setup(useSnackbar: ProviderContext) {
+      if (this.isSetup) {
+        return
+      }
+
+      this.enqueueSnackbarRef = useSnackbar.enqueueSnackbar
+
+      this.isSetup = true
+    }
+
+    static enqueueSnackbar(message: string, options: OptionsObject) {
+      return this.enqueueSnackbarRef(message, {
+        ...options,
+        style: { whiteSpace: 'pre-line', fontFamily: 'Helvetica Neue' },
+      })
+    }
+  }
+
   export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return <SnackbarProvider maxSnack={3}>{children}</SnackbarProvider>
   }

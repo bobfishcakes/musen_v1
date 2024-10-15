@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { ConfigurationService } from '@server/core/configuration'
+import { HttpService } from '../http'
 import { Logger, LoggerService } from '../logger'
 import { UploadProviderAws } from './internal/providers/aws/upload.provider.aws'
 import { UploadProviderLocal } from './internal/providers/local/upload.provider.local'
@@ -14,6 +15,7 @@ export class UploadService implements OnModuleInit {
   constructor(
     private configurationService: ConfigurationService,
     private loggerService: LoggerService,
+    private httpService: HttpService,
   ) {
     this.logger = loggerService.create({ name: 'UploadService' })
   }
@@ -29,6 +31,7 @@ export class UploadService implements OnModuleInit {
       const instance = new UploadProviderAws(
         this.loggerService,
         this.configurationService,
+        this.httpService,
       )
 
       await instance.initialise()

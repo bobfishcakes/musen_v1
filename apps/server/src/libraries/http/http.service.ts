@@ -42,4 +42,9 @@ export class HttpService {
 
     return response.data
   }
+
+  setApiKey(apiKey: string): void {
+    this.options.headers['Authorization'] = apiKey
+    this.options['credentials'] = 'include'
+  }
 }

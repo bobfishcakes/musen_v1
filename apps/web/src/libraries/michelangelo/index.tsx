@@ -9,13 +9,9 @@ type Props = {
 const useMichelangelo = () => {
   const configuration = useConfiguration()
 
-  if (!configuration.isMarblismMichelangeloActive) {
-    return
-  }
+  useMessageSend(configuration.isMarblismMichelangeloActive)
 
-  useMessageSend()
-
-  useMessageReceived()
+  useMessageReceived(configuration.isMarblismMichelangeloActive)
 
   return <></>
 }
