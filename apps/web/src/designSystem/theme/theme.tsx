@@ -1,9 +1,7 @@
 import { theme } from 'antd'
-import { Inter } from 'next/font/google'
+import { Amaranth } from 'next/font/google'
 
-const interFont = Inter({
-  subsets: ['latin'],
-})
+const amaranthFont = Amaranth({ subsets: ['latin'], weight: ['400', '700'] })
 
 export const Theme = {
   algorithm: theme.darkAlgorithm,
@@ -21,7 +19,7 @@ export const Theme = {
     colorBgContainer: '#81A18B', // green table color is 81A18B
 
     // Typography
-    fontFamily: `${interFont.style.fontFamily}, -apple-system, 'Inconsolate'`,
+    fontFamily: `${amaranthFont.style.fontFamily}, -apple-system, 'Inconsolate'`,
     fontSize: 20,
     fontSizeHeading1: 38,
     fontSizeHeading2: 30,

@@ -105,7 +105,9 @@ export default function HomePage() {
                       )
                     }
                   >
-                    <span style={{ fontSize: '20px' }}>listen now</span>
+                    <span style={{ fontSize: '20px', color: 'black' }}>
+                      listen now
+                    </span>
                   </Button>
                 </List.Item>
               )}
@@ -134,7 +136,9 @@ export default function HomePage() {
             bordered={false}
             actions={[
               <Button type="primary" onClick={navigateToStreamerDashboard}>
-                <span style={{ fontSize: '20px' }}>go to dashboard</span>
+                <span style={{ fontSize: '20px', color: 'black' }}>
+                  go to dashboard
+                </span>
               </Button>,
             ]}
           >
