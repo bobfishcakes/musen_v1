@@ -71,8 +71,21 @@ export default function HomePage() {
     <PageLayout layout="narrow">
       <Row justify="center" style={{ marginBottom: '20px' }}>
         <Col>
-          <Title level={2} style={{ fontSize: '100px' }}>
+          <Title
+            level={2}
+            style={{
+              fontSize: '100px',
+              marginBottom: '10px',
+              marginLeft: '27x',
+            }}
+          >
             musen
+          </Title>
+          <Title
+            level={2}
+            style={{ fontSize: '35px', fontWeight: 'normal', marginTop: '0px' }}
+          >
+            sports how you want it
           </Title>
         </Col>
       </Row>

@@ -1,51 +1,58 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { List, Button, Typography } from 'antd'
 import { Api, Model } from '@web/domain'
+import { Button, Card, List, Typography } from 'antd'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const { Title, Text } = Typography
 
 export default function EventStreamersPage() {
   const [streams, setStreams] = useState<Model.Stream[]>([])
+  const [eventName, setEventName] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
-    const fetchStreams = async () => {
+    const fetchEventAndStreams = async () => {
       try {
         const eventId = 'selected-event-id' // Replace with actual event ID
-        const streams = await Api.SportingEvent.findMany({
+        const events = await Api.SportingEvent.findMany({
           filters: { id: eventId },
-          includes: ['streams.streamer']
+          includes: ['streams.streamer'],
         })
-        setStreams(streams[0].streams || [])
+        if (events.length > 0) {
+          const event = events[0]
+          setEventName(event.name || '')
+          setStreams(event.streams || [])
+        }
       } catch (error) {
-        console.error('Failed to fetch streams:', error)
+        console.error('Failed to fetch event and streams:', error)
       }
     }
 
-    fetchStreams()
+    fetchEventAndStreams()
   }, [])
 
   const dummyStreamers = [
     {
       id: '1',
-      name: 'Streamer One',
+      name: 'Emily Jones',
       listeners: 120,
-      duration: '2h 30m',
+      description:
+        'Let me teach you how the game is played with pop culture references!',
     },
     {
       id: '2',
-      name: 'Streamer Two',
+      name: 'John Doe',
       listeners: 80,
-      duration: '1h 45m',
+      description:
+        'I hit my 5 last parlays - make another $1000 with me this game',
     },
     {
       id: '3',
-      name: 'Streamer Three',
+      name: 'José Ramirez',
       listeners: 150,
-      duration: '3h 15m',
+      description: '¡Qué divertido! Veamos a los Chiefs ganar juntos',
     },
   ]
 
@@ -55,32 +62,62 @@ export default function EventStreamersPage() {
   }
 
   return (
-    <div>
-      <Title level={2}>Streamers</Title>
-      <List
-        itemLayout="horizontal"
-        dataSource={streams.length > 0 ? streams : dummyStreamers}
-        renderItem={(item: any) => (
-          <List.Item
-            actions={[
-              <Button type="primary" onClick={() => handleListenNow(item.id)}>
-                Listen Now
-              </Button>,
-            ]}
-          >
-            <List.Item.Meta
-              title={item.streamer?.name || item.name}
-              description={
-                <>
-                  <Text>Listeners: {item.listeners || 'N/A'}</Text>
-                  <br />
-                  <Text>Duration: {item.duration || 'N/A'}</Text>
-                </>
-              }
-            />
-          </List.Item>
-        )}
-      />
+    <div
+      style={{
+        padding: '20px',
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
+      }}
+    >
+      <Title level={2} style={{ fontSize: '50px' }}>
+        Live Commentators for Super Bowl LIII {eventName}
+      </Title>
+      <Card style={{ backgroundColor: '#81A18B' }} bordered={false}>
+        <List
+          itemLayout="horizontal"
+          dataSource={streams.length > 0 ? streams : dummyStreamers}
+          renderItem={(item: any) => (
+            <List.Item
+              actions={[
+                <Button
+                  type="primary"
+                  onClick={() => handleListenNow(item.id)}
+                  style={{
+                    color: 'black',
+                    fontWeight: 'bold',
+                    fontSize: '25px',
+                    padding: '12px 24px',
+                    height: 'auto',
+                  }}
+                >
+                  Listen Now
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={
+                  <Text strong style={{ fontSize: '30px' }}>
+                    {item.streamer?.name || item.name}
+                    <br></br>
+                  </Text>
+                }
+                description={
+                  <div style={{ fontSize: '20px' }}>
+                    <Text>{item.description || 'N/A'}</Text>
+                    <br></br>
+                    <br></br>
+
+                    <Text style={{ fontSize: '18px', fontStyle: 'italic' }}>
+                      Listeners: {item.listeners || 'N/A'}
+                    </Text>
+                  </div>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      </Card>
     </div>
   )
 }
