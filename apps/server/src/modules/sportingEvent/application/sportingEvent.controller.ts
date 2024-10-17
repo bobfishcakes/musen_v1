@@ -1,21 +1,24 @@
-import { Request } from 'express'
-
 import {
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   Req,
 } from '@nestjs/common'
 import { EventService } from '@server/libraries/event'
+import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
 import {
   SportingEvent,
   SportingEventDomainFacade,
 } from '@server/modules/sportingEvent/domain'
-import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
+import { SportingEventApi } from '@web/domain/sportingEvent/sportingEvent.api'
+import { Request } from 'express'
 import { RequestHelper } from '../../../helpers/request'
 import { SportingEventApplicationEvent } from './sportingEvent.application.event'
 import {
@@ -70,6 +73,26 @@ export class SportingEventController {
     )
 
     return item
+  }
+
+  @Get('live')
+  async getLiveEvents(@Query('date') date: string) {
+    try {
+      const liveEvents = await SportingEventApi.fetchLiveEvents(date)
+      return liveEvents.map(event => ({
+        id: event.fixture.id.toString(),
+        name: `${event.teams.home.name} vs ${event.teams.away.name}`,
+        startTime: event.fixture.date,
+        endTime: event.fixture.date, // API doesn't provide end time, so we use start time
+        league: event.league,
+        teams: event.teams,
+      }))
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch live events',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      )
+    }
   }
 
   @Patch('/:sportingEventId')

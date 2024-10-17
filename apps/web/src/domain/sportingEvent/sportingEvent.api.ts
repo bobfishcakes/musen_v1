@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { HttpService } from '../../core/http'
 import { ApiHelper } from '../helpers/api.helper'
 import { SportingEvent } from './sportingEvent.model'
@@ -52,6 +53,25 @@ export class SportingEventApi {
       name: event.name || '',
       startTime: event.startTime, // Keep as string
       endTime: event.endTime, // Keep as string
+    }
+  }
+
+  static async fetchLiveEvents(date: string) {
+    try {
+      const response = await axios.get(
+        'https://v1.american-football.api-sports.io/',
+        {
+          params: { date, timezone: 'UTC' },
+          headers: {
+            'x-rapidapi-key': '6c3c11fe1af925ff889d220229ff3297',
+            'x-rapidapi-host': 'v1.american-football.api-sports.io',
+          },
+        },
+      )
+      return response.data.response
+    } catch (error) {
+      console.error('Error fetching live events:', error)
+      throw error
     }
   }
 }

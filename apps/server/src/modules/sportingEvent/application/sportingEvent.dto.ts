@@ -1,39 +1,44 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator'
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator'
+
+export class LiveEventDto {
+  @IsString()
+  id: string
+
+  @IsString()
+  name: string
+
+  @IsString()
+  startTime: string
+
+  @IsString()
+  endTime: string
+
+  @IsObject()
+  league: { id: number; name: string }
+
+  @IsObject()
+  teams: {
+    home: { id: number; name: string }
+    away: { id: number; name: string }
+  }
+}
 
 export class SportingEventCreateDto {
   @IsString()
-  @IsOptional()
-  name?: string
+  @IsNotEmpty()
+  name: string
 
   @IsString()
-  @IsOptional()
-  startTime?: string
+  @IsNotEmpty()
+  startTime: string
 
   @IsString()
-  @IsOptional()
-  endTime?: string
+  @IsNotEmpty()
+  endTime: string
 
   @IsString()
   @IsOptional()
   description?: string
-
-  @IsString()
-  @IsOptional()
-  dateCreated?: string
-
-  @IsString()
-  @IsOptional()
-  dateDeleted?: string
-
-  @IsString()
-  @IsOptional()
-  dateUpdated?: string
 }
 
 export class SportingEventUpdateDto {
@@ -52,16 +57,4 @@ export class SportingEventUpdateDto {
   @IsString()
   @IsOptional()
   description?: string
-
-  @IsString()
-  @IsOptional()
-  dateCreated?: string
-
-  @IsString()
-  @IsOptional()
-  dateDeleted?: string
-
-  @IsString()
-  @IsOptional()
-  dateUpdated?: string
 }
