@@ -81,7 +81,7 @@ export default function LoginPage() {
           }}
           gap="middle"
         >
-          <Header description="Welcome back!" />
+          <Header description="sports how you want it" />
           <ErrorAlert errors={errors} />
 
           <LoginForm

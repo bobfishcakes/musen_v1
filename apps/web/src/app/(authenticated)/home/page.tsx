@@ -69,14 +69,14 @@ export default function HomePage() {
 
   return (
     <PageLayout layout="narrow">
-      <Row justify="center" style={{ marginBottom: '20px' }}>
+      <Row justify="center" style={{ marginBottom: '40px' }}>
         <Col>
           <Title
             level={2}
             style={{
-              fontSize: '100px',
-              marginBottom: '10px',
-              marginLeft: '27x',
+              fontSize: '125px',
+              marginBottom: '20px',
+              marginLeft: '100x',
             }}
           >
             musen
