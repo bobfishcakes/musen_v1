@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 import { DateHelper } from '@server/helpers/date'
 import { FileHelper } from '@server/helpers/file'
 import { HttpService } from '@server/libraries/http'
@@ -20,6 +20,20 @@ export class AiController {
     private httpService: HttpService,
     private uploadService: UploadService,
   ) {}
+
+  @Get('/sports-events')
+  async getSportsEvents() {
+    if (!this.openaiService.isActive()) {
+      this.exception.openaiNotActivated()
+    }
+
+    try {
+      const answer = await this.openaiService.getSportsEvents()
+      return { answer }
+    } catch (error) {
+      this.exception.openaiError(error)
+    }
+  }
 
   @Post('/chat')
   async chat(@Body() body: AiChatBody) {

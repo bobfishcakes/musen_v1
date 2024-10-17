@@ -4,9 +4,12 @@ import { UserOutlined } from '@ant-design/icons'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api, Model } from '@web/domain'
+import { AiApi } from '@web/domain/ai/ai.api'
+import { SportingEvent } from '@web/domain/sportingEvent/sportingEvent.model'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
 import { Avatar, Button, Card, Col, List, Row, Typography } from 'antd'
+import { Utility } from 'apps/web/src/libraries/utility'
 import dayjs from 'dayjs'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
@@ -19,23 +22,102 @@ export default function HomePage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
+  const [sportingEvents, setSportingEvents] = useState<SportingEvent[]>([])
+  const [eventDescriptions, setEventDescriptions] = useState<string[]>([])
 
-  const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
+  /* const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
     [],
-  )
+  ) */
+
   const [user, setUser] = useState<Model.User | null>(null)
   const [isStreamingLive, setIsStreamingLive] = useState<boolean>(false)
 
   useEffect(() => {
-    const fetchSportingEvents = async () => {
+    /* const fetchSportingEvents = async () => {
       try {
         const events = await Api.SportingEvent.findMany({
           includes: ['streams', 'streams.streamer'],
         })
         setSportingEvents(events)
+        await fetchEventDescriptions(events) // Add this line
       } catch (error) {
         enqueueSnackbar('Failed to fetch sporting events', { variant: 'error' })
       }
+    } */
+
+    /*
+    const fetchEventDescriptions = async (events: Model.SportingEvent[]) => {
+      const descriptions = await Promise.all(
+        events.map(async event => {
+          const prompt = `Describe the sporting event "${event.name}" in 10 words. Use the internet to find the most recent information about the event. Don't mention the name of the event in the 10-word description.`
+          try {
+            const response = await AiApi.chat(prompt)
+            return response
+          } catch (error) {
+            console.error('Error fetching description:', error)
+            return 'Description unavailable'
+          }
+        }),
+      )
+      setEventDescriptions(descriptions)
+    } */
+
+    const fetchSportingEvents = async () => {
+      const prompt = `Search the web and list today's sporting events.
+      For each event, provide the following information in this exact format:
+      EventName|StartTime|EndTime
+      Where:
+      - EventName is the name of the event
+      - StartTime is in 24-hour format (HH:MM)
+      - EndTime is the expected end time in 24-hour format (HH:MM)
+      Separate each event with a newline character.
+      Do not include any additional information or formatting.`
+      try {
+        const response = await AiApi.chat(prompt)
+        const events = parseEventsData(response)
+        setSportingEvents(events)
+        // ... rest of your code
+      } catch (error) {
+        enqueueSnackbar('Failed to fetch sporting events', { variant: 'error' })
+      }
+    }
+
+    const parseEventsData = (data: string): SportingEvent[] => {
+      const lines = data.split('\n').filter(line => line.trim() !== '')
+
+      return lines.map((line, index) => {
+        const [name, startTime, endTime] = line
+          .split(',')
+          .map(item => item.trim())
+
+        const sportingEvent = new SportingEvent()
+        sportingEvent.id = Utility.getUUID()
+        sportingEvent.name = name
+        sportingEvent.startTime = startTime // Keeping this as a string
+        sportingEvent.endTime = endTime // Keeping this as a string
+        sportingEvent.dateCreated = new Date().toISOString()
+        sportingEvent.dateUpdated = new Date().toISOString()
+
+        return sportingEvent
+      })
+    }
+
+    const fetchEventDescriptions = async (events: SportingEvent[]) => {
+      const descriptions = await Promise.all(
+        events.map(async event => {
+          const prompt = `Describe the sporting event "${event.name}" in 10 words. \
+          Use the internet to find the most recent information about the event. \
+          Don't mention the name of the event in the 10-word description.`
+          try {
+            const response = await AiApi.chat(prompt)
+            return response
+          } catch (error) {
+            console.error('Error fetching description:', error)
+            return 'Description unavailable'
+          }
+        }),
+      )
+      setEventDescriptions(descriptions)
     }
 
     const fetchUserProfile = async () => {
@@ -98,7 +180,7 @@ export default function HomePage() {
             <List
               itemLayout="horizontal"
               dataSource={sportingEvents}
-              renderItem={event => (
+              renderItem={(event, index) => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
@@ -109,16 +191,16 @@ export default function HomePage() {
                         <span style={{ fontSize: '22px' }}>{event.name}</span>
                         <br />
                         <span
-                          style={{ fontSize: '16px', fontWeight: 'normal' }}
+                          style={{ fontSize: '18px', fontWeight: 'normal' }}
                         >
-                          {event.description} <span />
+                          {eventDescriptions[index] || 'Loading description...'}
                         </span>
                       </>
                     }
                     description={
                       <span style={{ fontSize: '16px' }}>
                         {'Event started at ' +
-                          dayjs(event.startTime).format('h:mm A') +
+                          dayjs(event.startTime).format('MMM D, YYYY h:mm A') +
                           ', expected to end at ' +
                           dayjs(event.endTime).format('h:mm A')}
                       </span>

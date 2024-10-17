@@ -35,4 +35,19 @@ export class AiApi {
       .post<any>(`/v1/ai/text-to-audio`, { text })
       .then(({ url }) => url)
   }
+
+  static getSportsEvents(): Promise<string> {
+    const prompt = `List today's major sporting events in basketball, football, soccer, baseball, hockey, tennis, and other major sports.
+      For each event, provide the following information in this exact format:
+      EventName|StartTime|EndTime
+      Where:
+      - EventName is the name of the event
+      - StartTime is in 24-hour format (HH:MM)
+      - EndTime is the expected end time in 24-hour format (HH:MM)
+      Separate each event with a newline character.
+      Do not include any additional information or formatting.`
+    return HttpService.api
+      .post<any>(`/v1/ai/chat`, { prompt })
+      .then(({ answer }) => answer)
+  }
 }
