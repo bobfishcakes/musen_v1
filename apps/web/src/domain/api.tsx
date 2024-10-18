@@ -22,6 +22,8 @@ import { ClipApi } from './clip/clip.api'
 
 import { EarningApi } from './earning/earning.api'
 
+import { AmericanFootballApi } from './americanFootball/americanFootball.api'
+
 export namespace Api {
   export class Ai extends AiApi {}
   export class Authentication extends AuthenticationApi {}
@@ -46,4 +48,6 @@ export namespace Api {
   export class Clip extends ClipApi {}
 
   export class Earning extends EarningApi {}
+
+  export class AmericanFootball extends AmericanFootballApi {}
 }

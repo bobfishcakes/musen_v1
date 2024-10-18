@@ -4,14 +4,19 @@ import { UserOutlined } from '@ant-design/icons'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api, Model } from '@web/domain'
+import { AmericanFootballApi } from '@web/domain/americanFootball/americanFootball.api'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
 import { Avatar, Button, Card, Col, List, Row, Typography } from 'antd'
 import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 const { Title, Paragraph } = Typography
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export default function HomePage() {
   const router = useRouter()
@@ -19,6 +24,7 @@ export default function HomePage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
+  const [games, setGames] = useState([])
 
   const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
     [],
@@ -35,6 +41,20 @@ export default function HomePage() {
         setSportingEvents(events)
       } catch (error) {
         enqueueSnackbar('Failed to fetch sporting events', { variant: 'error' })
+      }
+    }
+
+    const fetchGames = async () => {
+      const today = dayjs().format('YYYY-MM-DD')
+      try {
+        const response = await AmericanFootballApi.getGames({
+          date: today,
+          timezone: 'America/Chicago',
+          live: 'all',
+        })
+        setGames(response.response)
+      } catch (error) {
+        console.error('Error fetching games:', error)
       }
     }
 
@@ -57,6 +77,7 @@ export default function HomePage() {
 
     fetchSportingEvents()
     fetchUserProfile()
+    fetchGames()
   }, [userId])
 
   const navigateToStreamerDashboard = () => {
@@ -65,6 +86,33 @@ export default function HomePage() {
 
   const navigateToStream = (eventId: string, streamerId: string) => {
     router.push(`/events/${eventId}/streamers/${streamerId}`)
+  }
+
+  const renderGames = () => {
+    return games.map(game => (
+      <List.Item key={game.id}>
+        <List.Item.Meta
+          avatar={<FontAwesomeIcon icon={solidIcons.faFootballBall} />}
+          title={
+            <span style={{ fontSize: '18px' }}>
+              {game.teams.home.name} vs {game.teams.away.name}
+            </span>
+          }
+          description={
+            <>
+              <p>League: {game.league.name}</p>
+              <p>
+                Start Time:{' '}
+                {dayjs(game.date)
+                  .tz('America/Chicago')
+                  .format('MMMM D, YYYY h:mm A')}
+              </p>
+              <p>Status: {game.status.long}</p>
+            </>
+          }
+        />
+      </List.Item>
+    ))
   }
 
   return (

@@ -58,13 +58,26 @@ export class HttpClient {
     return options
   }
 
-  async get<Type>(url: string): Promise<Type> {
+  async get<Type>(
+    url: string,
+    options: {
+      headers: { [key: string]: string }
+      params?: { [key: string]: any }
+    },
+  ): Promise<Type> {
     const requestOptions: RequestInit = {
       ...this.getRequestOptions(),
       method: 'GET',
+      headers: {
+        ...this.getRequestOptions().headers,
+        ...options.headers,
+      },
     }
 
-    return fetch(`${this.baseUrl}${url}`, requestOptions).then(response => {
+    const queryParams = new URLSearchParams(options.params).toString()
+    const fullUrl = `${this.baseUrl}${url}${queryParams ? `?${queryParams}` : ''}`
+
+    return fetch(fullUrl, requestOptions).then(response => {
       return this.handleResponse(response)
     })
   }
