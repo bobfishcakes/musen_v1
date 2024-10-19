@@ -1,4 +1,13 @@
-import { Body, Controller, Patch, Post, Req, Res } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Patch,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common'
 import { Authentication } from '@server/core/authentication'
 import { EventService } from '@server/libraries/event'
 import { Logger, LoggerService } from '@server/libraries/logger'
@@ -122,20 +131,28 @@ export class AuthenticationController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const token = this.authenticationDomainFacade.getAccessToken(request)
-
     try {
+      const token = this.authenticationDomainFacade.getAccessToken(request)
+
+      if (!token) {
+        throw new HttpException('No token provided', HttpStatus.UNAUTHORIZED)
+      }
+
       let userId: string
 
       try {
         const payload = this.authenticationDomainFacade.verifyTokenOrFail(token)
-
         userId = payload.userId
       } catch (error) {
-        this.exception.invalidAccessToken()
+        this.logger.error('Token verification failed', error)
+        throw new HttpException('Invalid access token', HttpStatus.UNAUTHORIZED)
       }
 
       const user = await this.userDomainFacade.findOneByIdOrFail(userId)
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.UNAUTHORIZED)
+      }
 
       const tokenRefreshed = this.authenticationDomainFacade.buildToken(user.id)
 
@@ -148,7 +165,15 @@ export class AuthenticationController {
     } catch (error) {
       this.cookieService.deleteAccessToken(response)
 
-      throw error
+      if (error instanceof HttpException) {
+        throw error
+      }
+
+      this.logger.error('Refresh token error', error)
+      throw new HttpException(
+        'Refresh token failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      )
     }
   }
 

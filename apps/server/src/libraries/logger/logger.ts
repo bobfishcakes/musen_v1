@@ -26,7 +26,7 @@ export class Logger {
     this.instance.info(this.buildMessage(`[SUCCESS] ${message}`))
   }
 
-  error(error: Error | string): void {
+  error(error: Error | string, context?: any): void {
     const isString = typeof error === 'string'
     const message = isString ? error : error.message
 
