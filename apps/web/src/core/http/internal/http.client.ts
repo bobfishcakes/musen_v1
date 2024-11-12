@@ -58,7 +58,13 @@ export class HttpClient {
     return options
   }
 
-  async get<Type>(url: string): Promise<Type> {
+  async get<Type>(
+    url: string,
+    p0: {
+      headers: { 'x-rapidapi-key': string; 'x-rapidapi-host': string }
+      params: Record<string, any>
+    },
+  ): Promise<Type> {
     const requestOptions: RequestInit = {
       ...this.getRequestOptions(),
       method: 'GET',

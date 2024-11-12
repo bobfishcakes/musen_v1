@@ -1,187 +1,206 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import {
-  Typography,
-  Row,
-  Col,
-  Card,
-  Button,
-  List,
-  Avatar,
-  Spin,
-  Select,
-} from 'antd'
-import {
-  DollarCircleOutlined,
-  VideoCameraOutlined,
+  CommentOutlined,
+  DollarOutlined,
+  HeartOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons'
-const { Title, Text, Paragraph } = Typography
-const { Option } = Select
-import { useAuthentication } from '@web/modules/authentication'
-import dayjs from 'dayjs'
-import { useSnackbar } from 'notistack'
-import { useRouter, useParams } from 'next/navigation'
 import { Api, Model } from '@web/domain'
 import { PageLayout } from '@web/layouts/Page.layout'
+import { useAuthentication } from '@web/modules/authentication'
+import {
+  Avatar,
+  Button,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  List,
+  Row,
+  Space,
+  Typography,
+} from 'antd'
+import { useParams, useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
+import { useEffect, useState } from 'react'
+const { Title, Paragraph } = Typography
 
-export default function StreamerDashboardPage() {
+export default function UserStreamPage() {
   const router = useRouter()
   const params = useParams<any>()
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
 
-  const [user, setUser] = useState<Model.User | null>(null)
-  const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
-    [],
-  )
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [stream, setStream] = useState<Model.Stream | null>(null)
+  const [comments, setComments] = useState<Model.Comment[]>([])
+  const [newComment, setNewComment] = useState<string>('')
+  const [donationAmount, setDonationAmount] = useState<number>(0)
 
   useEffect(() => {
-    if (userId) {
-      Api.User.findOne(userId, {
-        includes: [
-          'earningsAsStreamer',
-          'streamsAsStreamer',
-          'streamsAsStreamer.clips',
-        ],
-      })
-        .then(setUser)
-        .catch(error => enqueueSnackbar(error.message, { variant: 'error' }))
-        .finally(() => setLoading(false))
-    }
-  }, [userId])
-
-  useEffect(() => {
-    Api.SportingEvent.findMany()
-      .then(setSportingEvents)
-      .catch(error => enqueueSnackbar(error.message, { variant: 'error' }))
-  }, [])
-
-  const handleStartStream = () => {
-    if (selectedEvent && userId) {
-      Api.Stream.createOneBySportingEventId(selectedEvent, {
-        streamerId: userId,
-      })
-        .then(stream =>
-          router.push(`/events/${selectedEvent}/streamers/${userId}`),
+    const fetchStream = async () => {
+      try {
+        const streams = await Api.Stream.findManyByStreamerId(
+          params.streamerId,
+          {
+            includes: ['streamer', 'comments.user'],
+          },
         )
-        .catch(error => enqueueSnackbar(error.message, { variant: 'error' }))
-    } else {
-      enqueueSnackbar('Please select a sporting event', { variant: 'error' })
+
+        if (streams.length > 0) {
+          setStream(streams[0])
+          setComments(streams[0].comments || [])
+        } else {
+          const newStream = await Api.Stream.createOneBySportingEventId(
+            params.eventId,
+            {
+              streamerId: params.streamerId,
+              status: 'active',
+            },
+          )
+          setStream(newStream)
+          setComments([])
+        }
+      } catch (error) {
+        enqueueSnackbar('Failed to load stream data', { variant: 'error' })
+      }
+    }
+
+    fetchStream()
+  }, [params.streamerId, params.eventId])
+
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim() || !stream) {
+      return
+    }
+
+    try {
+      const comment = await Api.Comment.createOneByStreamId(stream.id, {
+        content: newComment,
+        userId: userId,
+        commentTime: new Date().toISOString(),
+      })
+      setComments([...comments, comment])
+      setNewComment('')
+    } catch (error) {
+      enqueueSnackbar('Failed to post comment', { variant: 'error' })
     }
   }
 
-  if (loading) {
-    return <Spin size="large" />
+  const handleDonationSubmit = async () => {
+    if (donationAmount <= 0) {
+      return
+    }
+
+    try {
+      await Api.Donation.createOneByUserId(userId, {
+        amount: donationAmount,
+        donationTime: new Date().toISOString(),
+        streamerId: stream?.streamerId,
+      })
+      enqueueSnackbar('Donation successful', { variant: 'success' })
+      setDonationAmount(0)
+    } catch (error) {
+      enqueueSnackbar('Failed to donate', { variant: 'error' })
+    }
+  }
+
+  const handleSubscribe = async () => {
+    try {
+      await Api.Subscription.createOneByUserId(userId, {
+        startDate: new Date().toISOString(),
+        streamerId: stream?.streamerId,
+      })
+      enqueueSnackbar('Subscription successful', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar('Failed to subscribe', { variant: 'error' })
+    }
   }
 
   return (
     <PageLayout layout="narrow">
-      <Title level={2}>Streamer Dashboard</Title>
+      <Title level={2}>Live Stream</Title>
       <Paragraph>
-        Welcome to your dashboard. Here you can monitor your profits, access
-        pre-generated clips, and start a new live stream.
+        Follow the live sporting event and interact with the streamer and other
+        listeners.
       </Paragraph>
-      <Row gutter={[16, 16]} justify="center">
-        <Col span={24}>
-          <Card
-            title={
-              <>
-                <DollarCircleOutlined style={{ marginRight: 8 }} />
-                Your Earnings
-              </>
-            }
-            bordered={false}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={user?.earningsAsStreamer}
-              renderItem={earning => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar icon={<DollarCircleOutlined />} />}
-                    title={`$${earning.amount}`}
-                    description={dayjs(earning.earningTime).format(
-                      'MMMM D, YYYY',
-                    )}
+      {stream && (
+        <div>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <Title level={4}>{stream.streamer?.name}'s Stream</Title>
+              <Space>
+                <Button type="primary" icon={<PlayCircleOutlined />}>
+                  Listen to Stream
+                </Button>
+                <Button
+                  type="default"
+                  icon={<HeartOutlined />}
+                  onClick={handleSubscribe}
+                >
+                  Subscribe
+                </Button>
+              </Space>
+            </Col>
+            <Col span={24}>
+              <Title level={5}>
+                Game Time Remaining: {stream.gameTimeRemaining}
+              </Title>
+            </Col>
+            <Col span={24}>
+              <Title level={5}>Donate to Support</Title>
+              <Form layout="inline" onFinish={handleDonationSubmit}>
+                <Form.Item>
+                  <InputNumber
+                    min={1}
+                    value={donationAmount}
+                    onChange={value => setDonationAmount(value ? value : 0)}
+                    placeholder="Amount"
                   />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card
-            title={
-              <>
-                <VideoCameraOutlined style={{ marginRight: 8 }} />
-                Pre-generated Clips
-              </>
-            }
-            bordered={false}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={user?.streamsAsStreamer?.flatMap(
-                stream => stream.clips,
-              )}
-              renderItem={clip => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar icon={<VideoCameraOutlined />} />}
-                    title={
-                      <a
-                        href={clip.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Clip
-                      </a>
-                    }
-                    description={dayjs(clip.creationTime).format(
-                      'MMMM D, YYYY',
-                    )}
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card
-            title={
-              <>
-                <PlayCircleOutlined style={{ marginRight: 8 }} />
-                Start a Live Stream
-              </>
-            }
-            bordered={false}
-          >
-            <Select
-              style={{ width: '100%' }}
-              placeholder="Select a sporting event"
-              onChange={value => setSelectedEvent(value)}
-            >
-              {sportingEvents?.map(event => (
-                <Option key={event.id} value={event.id}>
-                  {event.name}
-                </Option>
-              ))}
-            </Select>
-            <Button
-              type="primary"
-              onClick={handleStartStream}
-              style={{ marginTop: '16px' }}
-            >
-              Start Streaming
-            </Button>
-          </Card>
-        </Col>
-      </Row>
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<DollarOutlined />}
+                  >
+                    Donate
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Col>
+            <Col span={24}>
+              <Title level={5}>Live Chat</Title>
+              <List
+                dataSource={comments}
+                renderItem={comment => (
+                  <List.Item key={comment.id}>
+                    <List.Item.Meta
+                      avatar={<Avatar src={comment.user?.pictureUrl} />}
+                      title={comment.user?.name}
+                      description={comment.content}
+                    />
+                  </List.Item>
+                )}
+              />
+              <Input.TextArea
+                rows={4}
+                value={newComment}
+                onChange={e => setNewComment(e.target.value)}
+                placeholder="Type your comment here..."
+              />
+              <Button
+                type="primary"
+                onClick={handleCommentSubmit}
+                icon={<CommentOutlined />}
+              >
+                Comment
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      )}
     </PageLayout>
   )
 }

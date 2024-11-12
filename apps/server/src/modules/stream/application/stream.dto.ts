@@ -1,83 +1,83 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator'
+// import {
+//   IsBoolean,
+//   IsNotEmpty,
+//   IsNumber,
+//   IsOptional,
+//   IsString,
+// } from 'class-validator'
 
-export class StreamCreateDto {
-  @IsString()
-  @IsOptional()
-  startTime?: string
+// export class StreamCreateDto {
+//   @IsString()
+//   @IsOptional()
+//   startTime?: string
 
-  @IsString()
-  @IsOptional()
-  endTime?: string
+//   @IsString()
+//   @IsOptional()
+//   endTime?: string
 
-  @IsString()
-  @IsOptional()
-  gameTimeRemaining?: string
+//   @IsString()
+//   @IsOptional()
+//   gameTimeRemaining?: string
 
-  @IsString()
-  @IsOptional()
-  status?: string
+//   @IsString()
+//   @IsOptional()
+//   status?: string
 
-  @IsString()
-  @IsOptional()
-  streamerId?: string
+//   @IsString()
+//   @IsOptional()
+//   streamerId?: string
 
-  @IsString()
-  @IsOptional()
-  sportingEventId?: string
+//   @IsString()
+//   @IsOptional()
+//   sportingEventId?: string
 
-  @IsString()
-  @IsOptional()
-  dateCreated?: string
+//   @IsString()
+//   @IsOptional()
+//   dateCreated?: string
 
-  @IsString()
-  @IsOptional()
-  dateDeleted?: string
+//   @IsString()
+//   @IsOptional()
+//   dateDeleted?: string
 
-  @IsString()
-  @IsOptional()
-  dateUpdated?: string
-}
+//   @IsString()
+//   @IsOptional()
+//   dateUpdated?: string
+// }
 
-export class StreamUpdateDto {
-  @IsString()
-  @IsOptional()
-  startTime?: string
+// export class StreamUpdateDto {
+//   @IsString()
+//   @IsOptional()
+//   startTime?: string
 
-  @IsString()
-  @IsOptional()
-  endTime?: string
+//   @IsString()
+//   @IsOptional()
+//   endTime?: string
 
-  @IsString()
-  @IsOptional()
-  gameTimeRemaining?: string
+//   @IsString()
+//   @IsOptional()
+//   gameTimeRemaining?: string
 
-  @IsString()
-  @IsOptional()
-  status?: string
+//   @IsString()
+//   @IsOptional()
+//   status?: string
 
-  @IsString()
-  @IsOptional()
-  streamerId?: string
+//   @IsString()
+//   @IsOptional()
+//   streamerId?: string
 
-  @IsString()
-  @IsOptional()
-  sportingEventId?: string
+//   @IsString()
+//   @IsOptional()
+//   sportingEventId?: string
 
-  @IsString()
-  @IsOptional()
-  dateCreated?: string
+//   @IsString()
+//   @IsOptional()
+//   dateCreated?: string
 
-  @IsString()
-  @IsOptional()
-  dateDeleted?: string
+//   @IsString()
+//   @IsOptional()
+//   dateDeleted?: string
 
-  @IsString()
-  @IsOptional()
-  dateUpdated?: string
-}
+//   @IsString()
+//   @IsOptional()
+//   dateUpdated?: string
+// }

@@ -5,16 +5,20 @@ import * as solidIcons from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api, Model } from '@web/domain'
 import { AiApi } from '@web/domain/ai/ai.api'
-import { SportingEvent } from '@web/domain/sportingEvent/sportingEvent.model'
+import { AmericanFootballApi } from '@web/domain/americanFootball/americanFootball.api'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
 import { Avatar, Button, Card, Col, List, Row, Typography } from 'antd'
-import { Utility } from 'apps/web/src/libraries/utility'
 import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
-const { Title, Paragraph } = Typography
+
+const { Title } = Typography
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export default function HomePage() {
   const router = useRouter()
@@ -22,34 +26,37 @@ export default function HomePage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
-  const [sportingEvents, setSportingEvents] = useState<SportingEvent[]>([])
-  const [eventDescriptions, setEventDescriptions] = useState<string[]>([])
 
-  /* const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
+  const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
     [],
-  ) */
-
+  )
+  const [eventDescriptions, setEventDescriptions] = useState<string[]>([])
+  const [games, setGames] = useState([])
+  const [gameDescriptions, setGameDescriptions] = useState<string[]>([])
   const [user, setUser] = useState<Model.User | null>(null)
   const [isStreamingLive, setIsStreamingLive] = useState<boolean>(false)
 
   useEffect(() => {
-    /* const fetchSportingEvents = async () => {
+    const fetchGames = async () => {
+      const today = dayjs().format('YYYY-MM-DD')
       try {
-        const events = await Api.SportingEvent.findMany({
-          includes: ['streams', 'streams.streamer'],
+        const response = await AmericanFootballApi.getGames({
+          date: today,
+          timezone: 'America/Chicago',
+          live: 'all',
         })
-        setSportingEvents(events)
-        await fetchEventDescriptions(events) // Add this line
+        setGames(response.response)
+        await fetchGameDescriptions(response.response)
       } catch (error) {
-        enqueueSnackbar('Failed to fetch sporting events', { variant: 'error' })
+        console.error('Error fetching games:', error)
+        enqueueSnackbar('Failed to fetch games', { variant: 'error' })
       }
-    } */
+    }
 
-    /*
-    const fetchEventDescriptions = async (events: Model.SportingEvent[]) => {
+    const fetchGameDescriptions = async (games: any[]) => {
       const descriptions = await Promise.all(
-        events.map(async event => {
-          const prompt = `Describe the sporting event "${event.name}" in 10 words. Use the internet to find the most recent information about the event. Don't mention the name of the event in the 10-word description.`
+        games.map(async game => {
+          const prompt = `Describe the NFL game between ${game.teams.home.name} and ${game.teams.away.name} in exactly 10 words.`
           try {
             const response = await AiApi.chat(prompt)
             return response
@@ -59,65 +66,7 @@ export default function HomePage() {
           }
         }),
       )
-      setEventDescriptions(descriptions)
-    } */
-
-    const fetchSportingEvents = async () => {
-      const prompt = `Search the web and list today's sporting events.
-      For each event, provide the following information in this exact format:
-      EventName|StartTime|EndTime
-      Where:
-      - EventName is the name of the event
-      - StartTime is in 24-hour format (HH:MM)
-      - EndTime is the expected end time in 24-hour format (HH:MM)
-      Separate each event with a newline character.
-      Do not include any additional information or formatting.`
-      try {
-        const response = await AiApi.chat(prompt)
-        const events = parseEventsData(response)
-        setSportingEvents(events)
-        // ... rest of your code
-      } catch (error) {
-        enqueueSnackbar('Failed to fetch sporting events', { variant: 'error' })
-      }
-    }
-
-    const parseEventsData = (data: string): SportingEvent[] => {
-      const lines = data.split('\n').filter(line => line.trim() !== '')
-
-      return lines.map((line, index) => {
-        const [name, startTime, endTime] = line
-          .split(',')
-          .map(item => item.trim())
-
-        const sportingEvent = new SportingEvent()
-        sportingEvent.id = Utility.getUUID()
-        sportingEvent.name = name
-        sportingEvent.startTime = startTime // Keeping this as a string
-        sportingEvent.endTime = endTime // Keeping this as a string
-        sportingEvent.dateCreated = new Date().toISOString()
-        sportingEvent.dateUpdated = new Date().toISOString()
-
-        return sportingEvent
-      })
-    }
-
-    const fetchEventDescriptions = async (events: SportingEvent[]) => {
-      const descriptions = await Promise.all(
-        events.map(async event => {
-          const prompt = `Describe the sporting event "${event.name}" in 10 words. \
-          Use the internet to find the most recent information about the event. \
-          Don't mention the name of the event in the 10-word description.`
-          try {
-            const response = await AiApi.chat(prompt)
-            return response
-          } catch (error) {
-            console.error('Error fetching description:', error)
-            return 'Description unavailable'
-          }
-        }),
-      )
-      setEventDescriptions(descriptions)
+      setGameDescriptions(descriptions)
     }
 
     const fetchUserProfile = async () => {
@@ -137,7 +86,7 @@ export default function HomePage() {
       }
     }
 
-    fetchSportingEvents()
+    fetchGames()
     fetchUserProfile()
   }, [userId])
 
@@ -174,46 +123,42 @@ export default function HomePage() {
       <Row gutter={16}>
         <Col span={24}>
           <Card
-            title={<span style={{ fontSize: '30px' }}>live sports</span>}
+            title={<span style={{ fontSize: '30px' }}>today's games</span>}
             bordered={false}
           >
             <List
               itemLayout="horizontal"
-              dataSource={sportingEvents}
-              renderItem={(event, index) => (
+              dataSource={games}
+              renderItem={(game, index) => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
-                      <FontAwesomeIcon icon={solidIcons.faMicrophoneLines} />
+                      <FontAwesomeIcon icon={solidIcons.faFootballBall} />
                     }
                     title={
                       <>
-                        <span style={{ fontSize: '22px' }}>{event.name}</span>
+                        <span style={{ fontSize: '22px' }}>
+                          {game.teams.home.name} vs {game.teams.away.name}
+                        </span>
                         <br />
                         <span
                           style={{ fontSize: '18px', fontWeight: 'normal' }}
                         >
-                          {eventDescriptions[index] || 'Loading description...'}
+                          {gameDescriptions[index] || 'Loading description...'}
                         </span>
                       </>
                     }
                     description={
                       <span style={{ fontSize: '16px' }}>
-                        {'Event started at ' +
-                          dayjs(event.startTime).format('MMM D, YYYY h:mm A') +
-                          ', expected to end at ' +
-                          dayjs(event.endTime).format('h:mm A')}
+                        {`Start time: ${dayjs(game.date)
+                          .tz('America/Chicago')
+                          .format('MMM D, YYYY h:mm A')} CST`}
                       </span>
                     }
                   />
                   <Button
                     type="primary"
-                    onClick={() =>
-                      navigateToStream(
-                        event.id,
-                        event.streams?.[0]?.streamerId || '',
-                      )
-                    }
+                    onClick={() => navigateToStream(game.id, '')}
                   >
                     <span style={{ fontSize: '20px', color: 'black' }}>
                       listen now
@@ -245,7 +190,11 @@ export default function HomePage() {
             title={<span style={{ fontSize: '30px' }}>streamer dashboard</span>}
             bordered={false}
             actions={[
-              <Button type="primary" onClick={navigateToStreamerDashboard}>
+              <Button
+                key="dashboard"
+                type="primary"
+                onClick={navigateToStreamerDashboard}
+              >
                 <span style={{ fontSize: '20px', color: 'black' }}>
                   go to dashboard
                 </span>
