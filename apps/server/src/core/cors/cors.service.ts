@@ -16,10 +16,14 @@ export class CorsService {
       {
         [ConfigurationServiceObject.Environment.DEVELOPMENT]: {
           origin: [clientBaseUrl],
+          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          allowedHeaders: 'Content-Type, Accept, Authorization',
           credentials: true,
         },
         [ConfigurationServiceObject.Environment.PRODUCTION]: {
           origin: clientBaseUrl,
+          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          allowedHeaders: 'Content-Type, Accept, Authorization',
           credentials: true,
         },
       }
