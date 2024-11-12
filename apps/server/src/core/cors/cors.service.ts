@@ -10,18 +10,28 @@ export class CorsService {
   constructor(private configurationService: ConfigurationService) {}
 
   getOptions() {
-    const clientBaseUrl = this.configurationService.getClientBaseUrl()
-
     const options: Record<ConfigurationServiceObject.Environment, CorsOptions> =
       {
         [ConfigurationServiceObject.Environment.DEVELOPMENT]: {
-          origin: [clientBaseUrl],
+          origin: (origin, callback) => {
+            if (origin) {
+              callback(null, origin)
+            } else {
+              callback(new Error('Not allowed by CORS'))
+            }
+          },
           methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
           allowedHeaders: 'Content-Type, Accept, Authorization',
           credentials: true,
         },
         [ConfigurationServiceObject.Environment.PRODUCTION]: {
-          origin: clientBaseUrl,
+          origin: (origin, callback) => {
+            if (origin) {
+              callback(null, origin)
+            } else {
+              callback(new Error('Not allowed by CORS'))
+            }
+          },
           methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
           allowedHeaders: 'Content-Type, Accept, Authorization',
           credentials: true,
