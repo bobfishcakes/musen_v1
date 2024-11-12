@@ -6,7 +6,10 @@ export class AuthorizationApi {
     type: AuthorizationType,
     email: string,
   ): Promise<{ keyPublic: string }> {
-    return HttpService.api.post(`/v1/authorization/${type}/code`, { email })
+    return HttpService.api.post(`/v1/authorization/${type}/code`, {
+      body: { email },
+      headers: {}, // Add any required headers here
+    })
   }
 
   static verifyCode(
@@ -19,13 +22,16 @@ export class AuthorizationApi {
   ): Promise<void> {
     const body = { ...values, email }
 
-    return HttpService.api.post(
-      `/v1/authorization/${type}/code-verification`,
+    return HttpService.api.post(`/v1/authorization/${type}/code-verification`, {
       body,
-    )
+      headers: {}, // Add any required headers here
+    })
   }
 
   static getPermissions(): Promise<{ roles: AuthorizationRole[] }> {
-    return HttpService.api.get(`/v1/users/me/authorization/permissions`)
+    return HttpService.api.get(`/v1/users/me/authorization/permissions`, {
+      headers: {},
+      params: {},
+    })
   }
 }
