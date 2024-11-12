@@ -139,7 +139,7 @@ export class StripeProvider implements Provider {
         product.type = ProductType.SUBSCRIPTION
       }
 
-      product.price = price?.unit_amount / 100 ?? 0
+      product.price = price?.unit_amount / 100
 
       products.push(product)
     }
