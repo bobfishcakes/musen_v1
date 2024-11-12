@@ -31,7 +31,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
 
   await app.listen(port)
-
+  console.log(corsService.getOptions())
   logger.success(`Application started on port ${port}`)
 }
 
