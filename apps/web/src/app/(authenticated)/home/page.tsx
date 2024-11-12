@@ -30,7 +30,6 @@ export default function HomePage() {
   const [sportingEvents, setSportingEvents] = useState<Model.SportingEvent[]>(
     [],
   )
-  const [eventDescriptions, setEventDescriptions] = useState<string[]>([])
   const [games, setGames] = useState([])
   const [gameDescriptions, setGameDescriptions] = useState<string[]>([])
   const [user, setUser] = useState<Model.User | null>(null)
@@ -58,7 +57,7 @@ export default function HomePage() {
         games.map(async game => {
           const prompt = `Describe the NFL game between ${game.teams.home.name} and ${game.teams.away.name} in exactly 10 words.`
           try {
-            const response = await AiApi.chat(prompt)
+            const response = await AiApi.chat(prompt) // Remove the { prompt } object
             return response
           } catch (error) {
             console.error('Error fetching description:', error)
@@ -88,7 +87,7 @@ export default function HomePage() {
 
     fetchGames()
     fetchUserProfile()
-  }, [userId])
+  }, [userId, enqueueSnackbar])
 
   const navigateToStreamerDashboard = () => {
     router.push('/streamer/dashboard')
