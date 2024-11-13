@@ -49,7 +49,7 @@ export class SportingEventController {
     const item = await this.sportingEventDomainFacade.create({
       ...body,
       creatorId: user.id,
-    })
+    } as SportingEventCreateDto) // Change this type assertion
 
     await this.eventService.emit<SportingEventCreatedPayload>(
       SportingEventApplicationEvent.SportingEventCreated.key,
