@@ -10,7 +10,7 @@ if [ -z "$DEPLOYMENT_ID" ]; then
   echo "SERVER_BASE_URL=http://localhost:3099" >> .env
 
   echo "# Optional" >> .env
-  echo "SERVER_OPENAI_API_KEY=" >> .env
+  echo "SERVER_OPENAI_API_KEY=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 >> .env
   echo "SERVER_GOOGLE_CLIENT_ID=" >> .env
   echo "SERVER_EMAIL_MAILPIT_HOST=" >> .env
   echo "SERVER_EMAIL_MAILPIT_PORT=" >> .env

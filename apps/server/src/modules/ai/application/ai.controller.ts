@@ -37,19 +37,11 @@ export class AiController {
 
   @Post('/chat')
   async chat(@Body() body: AiChatBody) {
-    const { prompt } = body
-
     if (!this.openaiService.isActive()) {
-      this.exception.openaiNotActivated()
+      throw this.exception.openaiNotActivated()
     }
-
-    try {
-      const answer = await this.openaiService.chat(prompt)
-
-      return { answer }
-    } catch (error) {
-      this.exception.openaiError(error)
-    }
+    const answer = await this.openaiService.chat(body.prompt)
+    return { answer } // Make sure you return an object with 'answer' property
   }
 
   @Post('/image')

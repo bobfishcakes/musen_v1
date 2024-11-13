@@ -18,7 +18,7 @@ export const Logo: React.FC<Props> = ({
   return (
     <>
       <img
-        src="/musen_official_logo.png"
+        src="/musen_logo.png"
         width={width}
         height={height}
         className="rounded-lg"

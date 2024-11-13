@@ -1,6 +1,6 @@
 import { HttpService } from '@web/core/http/http.service'
 
-const API_URL = '/api/proxy/american-football'
+const API_URL = 'https://v1.american-football.api-sports.io'
 const API_KEY = '6c3c11fe1af925ff889d220229ff3297' // Replace with your actual API key
 
 interface ApiResponse<T> {
@@ -141,21 +141,20 @@ export class AmericanFootballApi {
     params: Record<string, any> = {},
   ): Promise<ApiResponse<T>> {
     try {
-      HttpService.api.setBaseUrl(API_URL)
+      HttpService.api.setBaseUrl('https://v1.american-football.api-sports.io')
 
-      // Modified request options
+      // Simplify the headers to only what's needed
       const originalGetRequestOptions = HttpService.api.getRequestOptions
       HttpService.api.getRequestOptions = function () {
         const options = originalGetRequestOptions.call(this)
         return {
           ...options,
           headers: {
-            ...options.headers,
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': 'v1.american-football.api-sports.io',
+            'x-apisports-key': API_KEY,
           },
-          credentials: 'omit', // Add this line
-          mode: 'cors', // Add this line
+          // Remove authorization header
+          credentials: 'omit',
+          mode: 'cors',
         }
       }
 

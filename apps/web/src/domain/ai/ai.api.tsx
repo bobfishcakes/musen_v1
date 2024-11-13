@@ -12,10 +12,23 @@ import { HttpService } from '../../core/http'
  * @import import { Api } from '@web/domain'
  */
 export class AiApi {
-  static chat(prompt: string): Promise<string> {
-    return HttpService.api
-      .post<any>(`/v1/ai/chat`, { prompt })
-      .then(({ answer }) => answer)
+  static async chat(prompt: string): Promise<string> {
+    try {
+      const response = await HttpService.api.post<any>(`/v1/ai/chat`, {
+        prompt,
+      })
+      console.log('AI API Response:', response) // Debug log
+
+      if (!response.answer) {
+        console.error('Missing answer in response:', response)
+        return 'Unable to generate description at this time'
+      }
+
+      return response.answer
+    } catch (error) {
+      console.error('AI API Error:', error)
+      return 'Unable to generate description at this time'
+    }
   }
 
   static generateImage(prompt: string): Promise<string> {

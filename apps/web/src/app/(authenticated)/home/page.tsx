@@ -4,8 +4,8 @@ import { UserOutlined } from '@ant-design/icons'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api } from '@web/domain'
-import { AiApi } from '@web/domain/ai/ai.api'
 import { AmericanFootballApi } from '@web/domain/americanFootball/americanFootball.api'
+import { BasketballApi } from '@web/domain/basketball/basketball.api'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
 import { Avatar, Button, Card, Col, List, Row, Typography } from 'antd'
@@ -15,6 +15,43 @@ import utc from 'dayjs/plugin/utc'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+
+interface Team {
+  name: string
+  id: string
+}
+
+interface Teams {
+  home: Team
+  away: Team
+}
+
+interface League {
+  name: string
+  alias?: string
+}
+
+interface GameDate {
+  date: string
+  time: string
+}
+
+interface Game {
+  id: string
+  teams: Teams
+  league: League
+  date?: string
+  game?: {
+    date: GameDate
+    status: {
+      short: string
+    }
+  }
+}
+
+interface ApiResponse {
+  response: Game[]
+}
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -26,57 +63,77 @@ export default function HomePage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
-  const [liveGames, setLiveGames] = useState([])
-  const [gameDescriptions, setGameDescriptions] = useState({})
-  const [user, setUser] = useState(null)
+  const [nflGames, setNflGames] = useState<Game[]>([])
+  const [ncaaFootballGames, setNcaaFootballGames] = useState<Game[]>([])
+  const [nbaGames, setNbaGames] = useState<Game[]>([])
+  const [ncaaBasketballGames, setNcaaBasketballGames] = useState<Game[]>([])
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    const fetchLiveGames = async () => {
+    const fetchFootballGames = async () => {
       try {
-        // Get today's date in MM-DD-YYYY format for Central Time
-        const today = new Date()
-          .toLocaleDateString('en-US', {
-            timeZone: 'America/Chicago',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          })
-          .split('/')
-          .join('-')
-
-        const response = await AmericanFootballApi.getGames({
-          date: today,
-          timezone: 'America/Chicago',
-          live: 'all', // This will get all live games
+        const date = new Date()
+        const today = date.toLocaleDateString('en-US', {
+          timeZone: 'America/Chicago',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
         })
 
-        // Filter for live games
-        const liveGames = response.response.filter(game =>
-          ['NS', 'Q1', 'Q2', 'Q3', 'Q4', 'OT', 'HT'].includes(
-            game.game.status.short,
-          ),
+        const [month, day, year] = today.split('/')
+        const formattedDate = `${year}-${month}-${day}`
+
+        const response = await AmericanFootballApi.getGames({
+          date: formattedDate,
+          timezone: 'America/Chicago',
+        })
+
+        const nflGames = response.response.filter(
+          game => game.league?.name === 'NFL' || game.league?.alias === 'NFL',
+        )
+        const ncaaGames = response.response.filter(
+          game => game.league?.name === 'NCAA' || game.league?.alias === 'NCAA',
         )
 
-        setLiveGames(liveGames)
-        await generateDescriptions(liveGames)
+        setNflGames(nflGames)
+        setNcaaFootballGames(ncaaGames)
       } catch (error) {
-        enqueueSnackbar('Failed to fetch live games', { variant: 'error' })
+        enqueueSnackbar('Failed to fetch football games', { variant: 'error' })
       }
     }
 
-    const generateDescriptions = async games => {
-      const descriptions = {}
-      for (const game of games) {
-        const prompt = `Describe the NFL game between ${game.teams.home.name} and ${game.teams.away.name} in 10 words.`
-        try {
-          const description = await AiApi.chat(prompt)
-          descriptions[game.id] = description
-        } catch (error) {
-          descriptions[game.id] =
-            'Exciting NFL matchup between two competitive teams'
-        }
+    const fetchBasketballGames = async () => {
+      try {
+        const date = new Date()
+        const today = date.toLocaleDateString('en-US', {
+          timeZone: 'America/Chicago',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })
+
+        const [month, day, year] = today.split('/')
+        const formattedDate = `${year}-${month}-${day}`
+
+        const response = await BasketballApi.getGames({
+          date: formattedDate,
+          timezone: 'America/Chicago',
+        })
+
+        const nbaGames = response.response.filter(
+          game => game.league?.name === 'NBA' || game.league?.alias === 'NBA',
+        )
+        const ncaaGames = response.response.filter(
+          game => game.league?.name === 'NCAA' || game.league?.alias === 'NCAA',
+        )
+
+        setNbaGames(nbaGames)
+        setNcaaBasketballGames(ncaaGames)
+      } catch (error) {
+        enqueueSnackbar('Failed to fetch basketball games', {
+          variant: 'error',
+        })
       }
-      setGameDescriptions(descriptions)
     }
 
     const fetchUserProfile = async () => {
@@ -90,76 +147,125 @@ export default function HomePage() {
       }
     }
 
-    fetchLiveGames()
+    fetchFootballGames()
+    fetchBasketballGames()
     fetchUserProfile()
-  }, [userId])
+  }, [userId, enqueueSnackbar])
 
   const navigateToStream = gameId => {
     router.push(`/events/${gameId}/streamers`)
   }
 
+  const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
+    <List
+      itemLayout="horizontal"
+      dataSource={games}
+      renderItem={game => (
+        <List.Item>
+          <List.Item.Meta
+            avatar={<FontAwesomeIcon icon={icon} />}
+            title={
+              <span style={{ fontSize: '22px' }}>
+                {game.teams.away.name} @ {game.teams.home.name}
+              </span>
+            }
+            description={
+              <span style={{ fontSize: '16px' }}>
+                Start time:{' '}
+                {game.date
+                  ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
+                  : game.game?.date
+                    ? dayjs(`${game.game.date.date} ${game.game.date.time}`)
+                        .tz('America/Chicago')
+                        .format('h:mm A [CT]')
+                    : 'Time TBD'}
+              </span>
+            }
+          />
+          <Button type="primary" onClick={() => navigateToStream(game.id)}>
+            <span style={{ fontSize: '20px', color: 'black' }}>listen now</span>
+          </Button>
+        </List.Item>
+      )}
+    />
+  )
+
   return (
     <PageLayout layout="narrow">
       <Row justify="center" style={{ marginBottom: '40px' }}>
         <Col>
-          <Title level={2} style={{ fontSize: '125px', marginBottom: '20px' }}>
+          <Title
+            level={2}
+            style={{
+              fontSize: '125px',
+              marginBottom: '20px',
+              marginLeft: '85px',
+            }}
+          >
             musen
           </Title>
           <Title
             level={2}
             style={{ fontSize: '35px', fontWeight: 'normal', marginTop: '0px' }}
           >
-            sports how you want it
+            sports commentary how you want it
           </Title>
         </Col>
       </Row>
+
+      {/* NFL Games */}
       <Row gutter={16}>
         <Col span={24}>
           <Card
-            title={<span style={{ fontSize: '30px' }}>live NFL games</span>}
+            title={<span style={{ fontSize: '30px' }}>NFL Games</span>}
             bordered={false}
           >
-            <List
-              itemLayout="horizontal"
-              dataSource={liveGames}
-              renderItem={game => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <FontAwesomeIcon icon={solidIcons.faMicrophoneLines} />
-                    }
-                    title={
-                      <>
-                        <span style={{ fontSize: '22px' }}>
-                          {game.teams.away.name} @ {game.teams.home.name}
-                        </span>
-                        <br />
-                        <span
-                          style={{ fontSize: '18px', fontWeight: 'normal' }}
-                        >
-                          {gameDescriptions[game.id] ||
-                            'Loading description...'}
-                        </span>
-                      </>
-                    }
-                    description={
-                      <span style={{ fontSize: '16px' }}>
-                        {dayjs(game.date)
-                          .tz('America/Chicago')
-                          .format('MMM D, YYYY h:mm A [CT]')}
-                      </span>
-                    }
-                  />
-                  <Button
-                    type="primary"
-                    onClick={() => navigateToStream(game.id)}
-                  >
-                    <span style={{ fontSize: '20px', color: 'black' }}>
-                      listen now
-                    </span>
-                  </Button>
-                </List.Item>
-              )}
+            <GameList games={nflGames} icon={solidIcons.faFootballBall} />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* NCAA Football Games */}
+      <Row gutter={16} style={{ marginTop: '20px' }}>
+        <Col span={24}>
+          <Card
+            title={
+              <span style={{ fontSize: '30px' }}>NCAA Football Games</span>
+            }
+            bordered={false}
+          >
+            <GameList
+              games={ncaaFootballGames}
+              icon={solidIcons.faFootballBall}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* NBA Games */}
+      <Row gutter={16} style={{ marginTop: '20px' }}>
+        <Col span={24}>
+          <Card
+            title={<span style={{ fontSize: '30px' }}>NBA Games</span>}
+            bordered={false}
+          >
+            <GameList games={nbaGames} icon={solidIcons.faBasketballBall} />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* NCAA Basketball Games */}
+      <Row gutter={16} style={{ marginTop: '20px' }}>
+        <Col span={24}>
+          <Card
+            title={
+              <span style={{ fontSize: '30px' }}>NCAA Basketball Games</span>
+            }
+            bordered={false}
+          >
+            <GameList
+              games={ncaaBasketballGames}
+              icon={solidIcons.faBasketballBall}
             />
           </Card>
         </Col>
