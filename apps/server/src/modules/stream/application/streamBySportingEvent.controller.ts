@@ -3,14 +3,14 @@ import { Request } from 'express'
 import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common'
 import { RequestHelper } from '@server/helpers/request'
 import { EventService } from '@server/libraries/event'
-import { StreamDomainFacade } from '@server/modules/stream/domain'
 import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
+import { StreamDomainFacade } from '@server/modules/stream/domain'
 import { StreamApplicationEvent } from './stream.application.event'
 import { StreamCreateDto } from './stream.dto'
 
 import { SportingEventDomainFacade } from '../../sportingEvent/domain'
 
-@Controller('/v1/sportingEvents')
+@Controller('/v1/sporting-events')
 export class StreamBySportingEventController {
   constructor(
     private sportingEventDomainFacade: SportingEventDomainFacade,
@@ -38,7 +38,7 @@ export class StreamBySportingEventController {
     return items
   }
 
-  @Post('/sportingEvent/:sportingEventId/streams')
+  @Post('/:sportingEventId/streams') // Fix endpoint path
   async createBySportingEventId(
     @Param('sportingEventId') sportingEventId: string,
     @Body() body: StreamCreateDto,

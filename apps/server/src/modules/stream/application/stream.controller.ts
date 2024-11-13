@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common'
 import { EventService } from '@server/libraries/event'
-import { Stream, StreamDomainFacade } from '@server/modules/stream/domain'
 import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
+import { Stream, StreamDomainFacade } from '@server/modules/stream/domain'
 import { RequestHelper } from '../../../helpers/request'
 import { StreamApplicationEvent } from './stream.application.event'
 import { StreamCreateDto, StreamUpdateDto } from './stream.dto'
@@ -38,7 +38,11 @@ export class StreamController {
   async create(@Body() body: StreamCreateDto, @Req() request: Request) {
     const { user } = this.authenticationDomainFacade.getRequestPayload(request)
 
-    const item = await this.streamDomainFacade.create(body)
+    const item = await this.streamDomainFacade.create({
+      ...body,
+      streamerId: user.id, // Add this line
+      status: 'active', // Add this line
+    })
 
     await this.eventService.emit<StreamApplicationEvent.StreamCreated.Payload>(
       StreamApplicationEvent.StreamCreated.key,
@@ -50,7 +54,6 @@ export class StreamController {
 
     return item
   }
-
   @Get('/:streamId')
   async findOne(@Param('streamId') streamId: string, @Req() request: Request) {
     const queryOptions = RequestHelper.getQueryOptions(request)

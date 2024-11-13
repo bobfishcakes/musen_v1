@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 
 export class SportingEventCreateDto {
   @IsString()
@@ -22,6 +16,10 @@ export class SportingEventCreateDto {
   @IsString()
   @IsOptional()
   description?: string
+
+  @IsString()
+  @IsOptional()
+  creatorId?: string
 
   @IsString()
   @IsOptional()
@@ -52,6 +50,10 @@ export class SportingEventUpdateDto {
   @IsString()
   @IsOptional()
   description?: string
+
+  @IsString()
+  @IsOptional()
+  creatorId?: string
 
   @IsString()
   @IsOptional()

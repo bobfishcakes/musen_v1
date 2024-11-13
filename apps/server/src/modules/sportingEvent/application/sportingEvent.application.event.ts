@@ -1,10 +1,10 @@
-export namespace SportingEventApplicationEvent {
-  export namespace SportingEventCreated {
-    export const key = 'sportingEvent.application.sportingEvent.created'
+export const SportingEventApplicationEvent = {
+  SportingEventCreated: {
+    key: 'sportingEvent.application.sportingEvent.created',
+  },
+} as const
 
-    export type Payload = {
-      id: string
-      userId: string
-    }
-  }
+export interface SportingEventCreatedPayload {
+  id: string
+  userId: string
 }

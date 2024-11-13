@@ -1,5 +1,3 @@
-import { Request } from 'express'
-
 import {
   Body,
   Controller,
@@ -11,17 +9,24 @@ import {
   Req,
 } from '@nestjs/common'
 import { EventService } from '@server/libraries/event'
+import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
 import {
   SportingEvent,
   SportingEventDomainFacade,
 } from '@server/modules/sportingEvent/domain'
-import { AuthenticationDomainFacade } from '@server/modules/authentication/domain'
+import { Request } from 'express'
 import { RequestHelper } from '../../../helpers/request'
 import { SportingEventApplicationEvent } from './sportingEvent.application.event'
 import {
   SportingEventCreateDto,
   SportingEventUpdateDto,
 } from './sportingEvent.dto'
+
+// Define the event interface inline since the import is missing
+interface SportingEventCreatedPayload {
+  id: string
+  userId: string
+}
 
 @Controller('/v1/sportingEvents')
 export class SportingEventController {
@@ -34,19 +39,19 @@ export class SportingEventController {
   @Get('/')
   async findMany(@Req() request: Request) {
     const queryOptions = RequestHelper.getQueryOptions(request)
-
     const items = await this.sportingEventDomainFacade.findMany(queryOptions)
-
     return items
   }
 
   @Post('/')
   async create(@Body() body: SportingEventCreateDto, @Req() request: Request) {
     const { user } = this.authenticationDomainFacade.getRequestPayload(request)
+    const item = await this.sportingEventDomainFacade.create({
+      ...body,
+      creatorId: user.id,
+    })
 
-    const item = await this.sportingEventDomainFacade.create(body)
-
-    await this.eventService.emit<SportingEventApplicationEvent.SportingEventCreated.Payload>(
+    await this.eventService.emit<SportingEventCreatedPayload>(
       SportingEventApplicationEvent.SportingEventCreated.key,
       {
         id: item.id,
@@ -63,12 +68,10 @@ export class SportingEventController {
     @Req() request: Request,
   ) {
     const queryOptions = RequestHelper.getQueryOptions(request)
-
     const item = await this.sportingEventDomainFacade.findOneByIdOrFail(
       sportingEventId,
       queryOptions,
     )
-
     return item
   }
 
@@ -79,7 +82,6 @@ export class SportingEventController {
   ) {
     const item =
       await this.sportingEventDomainFacade.findOneByIdOrFail(sportingEventId)
-
     const itemUpdated = await this.sportingEventDomainFacade.update(
       item,
       body as Partial<SportingEvent>,
@@ -91,9 +93,7 @@ export class SportingEventController {
   async delete(@Param('sportingEventId') sportingEventId: string) {
     const item =
       await this.sportingEventDomainFacade.findOneByIdOrFail(sportingEventId)
-
     await this.sportingEventDomainFacade.delete(item)
-
     return item
   }
 }
