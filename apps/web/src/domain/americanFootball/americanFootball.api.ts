@@ -1,6 +1,7 @@
-import { HttpService } from '@web/core/http/http.service'
+import { HttpService } from '/tmp/workspace/repository/apps/web/src/core/http/http.service'
 
 const API_URL = 'https://v1.american-football.api-sports.io'
+HttpService.api.setBaseUrl(API_URL)
 const API_KEY = '6c3c11fe1af925ff889d220229ff3297' // Replace with your actual API key
 
 interface ApiResponse<T> {
@@ -143,8 +144,8 @@ export class AmericanFootballApi {
     try {
       const response = await HttpService.api.get<ApiResponse<T>>(endpoint, {
         headers: {
-          'x-rapidapi-key': API_KEY,
           'x-rapidapi-host': 'v1.american-football.api-sports.io',
+          'x-rapidapi-key': API_KEY,
         },
         params,
       })

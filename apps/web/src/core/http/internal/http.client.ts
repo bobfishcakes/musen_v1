@@ -58,15 +58,30 @@ export class HttpClient {
     return options
   }
 
-  async get<Type>(url: string): Promise<Type> {
+  async get<Type>(
+    url: string,
+    options?: {
+      headers?: Record<string, string>
+      params?: Record<string, any>
+    },
+  ): Promise<Type> {
     const requestOptions: RequestInit = {
       ...this.getRequestOptions(),
       method: 'GET',
+      headers: {
+        ...this.getRequestOptions().headers,
+        ...options?.headers,
+      },
     }
 
-    return fetch(`${this.baseUrl}${url}`, requestOptions).then(response => {
-      return this.handleResponse(response)
-    })
+    const queryParams = options?.params
+      ? '?' + new URLSearchParams(options.params).toString()
+      : ''
+    return fetch(`${this.baseUrl}${url}${queryParams}`, requestOptions).then(
+      response => {
+        return this.handleResponse(response)
+      },
+    )
   }
 
   async post<Type>(url: string, data: any = {}): Promise<Type> {
