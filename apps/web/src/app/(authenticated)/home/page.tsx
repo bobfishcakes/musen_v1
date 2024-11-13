@@ -35,13 +35,12 @@ export default function HomePage() {
       try {
         // Get today's date in MM-DD-YYYY format for Central Time
         const today = new Date()
-          .toLocaleString('en-US', {
+          .toLocaleDateString('en-US', {
             timeZone: 'America/Chicago',
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
           })
-          .split(',')[0]
           .split('/')
           .join('-')
 

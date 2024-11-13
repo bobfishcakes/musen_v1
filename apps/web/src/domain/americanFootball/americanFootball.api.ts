@@ -1,6 +1,6 @@
 import { HttpService } from '@web/core/http/http.service'
 
-const API_URL = 'https://v1.american-football.api-sports.io'
+const API_URL = '/api/proxy/american-football'
 const API_KEY = '6c3c11fe1af925ff889d220229ff3297' // Replace with your actual API key
 
 interface ApiResponse<T> {
@@ -143,7 +143,7 @@ export class AmericanFootballApi {
     try {
       HttpService.api.setBaseUrl(API_URL)
 
-      // Override the getRequestOptions method to include our custom headers
+      // Modified request options
       const originalGetRequestOptions = HttpService.api.getRequestOptions
       HttpService.api.getRequestOptions = function () {
         const options = originalGetRequestOptions.call(this)
@@ -151,18 +151,17 @@ export class AmericanFootballApi {
           ...options,
           headers: {
             ...options.headers,
-            'x-apisports-key': API_KEY,
+            'x-rapidapi-key': API_KEY,
             'x-rapidapi-host': 'v1.american-football.api-sports.io',
           },
+          credentials: 'omit', // Add this line
+          mode: 'cors', // Add this line
         }
       }
 
-      // Make the request using query parameters
       const queryString = new URLSearchParams(params).toString()
       const url = `${endpoint}${queryString ? `?${queryString}` : ''}`
-
-      const response = await HttpService.api.get<ApiResponse<T>>(url)
-      return response
+      return await HttpService.api.get<ApiResponse<T>>(url)
     } catch (error) {
       console.error(`Error fetching data from ${endpoint}:`, error)
       throw error
