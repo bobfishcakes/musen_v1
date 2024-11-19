@@ -1,19 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Typography, Row, Col, List, Avatar, Statistic, Card } from 'antd'
 import {
   CommentOutlined,
   DollarCircleOutlined,
   UserAddOutlined,
 } from '@ant-design/icons'
-const { Title, Text } = Typography
-import { useAuthentication } from '@web/modules/authentication'
-import dayjs from 'dayjs'
-import { useSnackbar } from 'notistack'
-import { useRouter, useParams } from 'next/navigation'
 import { Api, Model } from '@web/domain'
 import { PageLayout } from '@web/layouts/Page.layout'
+import { useAuthentication } from '@web/modules/authentication'
+import { Avatar, Card, Col, List, Row, Statistic, Typography } from 'antd'
+import dayjs from 'dayjs'
+import { useParams, useRouter } from 'next/navigation'
+import { useSnackbar } from 'notistack'
+import { useEffect, useState } from 'react'
+const { Title, Text } = Typography
 
 export default function StreamerLiveFeedPage() {
   const router = useRouter()
@@ -59,10 +59,6 @@ export default function StreamerLiveFeedPage() {
   return (
     <PageLayout layout="narrow">
       <Title level={2}>Live Stream Dashboard</Title>
-      <Text>
-        Interact with your audience and track your earnings and new subscribers
-        in real-time.
-      </Text>
       <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
         <Col xs={24} md={12}>
           <Card
@@ -92,7 +88,7 @@ export default function StreamerLiveFeedPage() {
           <Row gutter={[16, 16]}>
             <Col span={24}>
               <Card
-                title="Real-Time Earnings"
+                title="Current Earnings"
                 bordered={false}
                 extra={<DollarCircleOutlined />}
               >

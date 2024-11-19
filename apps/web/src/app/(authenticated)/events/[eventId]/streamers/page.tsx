@@ -1,37 +1,38 @@
 'use client'
 
-import { Api, Model } from '@web/domain'
 import { Button, Card, List, Typography } from 'antd'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 const { Title, Text } = Typography
 
+interface GameInfo {
+  id: string
+  homeTeam: string
+  awayTeam: string
+  league: string
+}
+
+interface Streamer {
+  id: string
+  name: string
+  listeners: number
+  description: string
+}
+
 export default function EventStreamersPage() {
-  const [streams, setStreams] = useState<Model.Stream[]>([])
-  const [eventName, setEventName] = useState<string>('')
+  const [streams, setStreams] = useState<any[]>([])
+  const [gameInfo, setGameInfo] = useState<GameInfo | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const fetchEventAndStreams = async () => {
-      try {
-        const eventId = 'selected-event-id' // Replace with actual event ID
-        const events = await Api.SportingEvent.findMany({
-          filters: { id: eventId },
-          includes: ['streams.streamer'],
-        })
-        if (events.length > 0) {
-          const event = events[0]
-          setEventName(event.name || '')
-          setStreams(event.streams || [])
-        }
-      } catch (error) {
-        console.error('Failed to fetch event and streams:', error)
-      }
+    const teamsParam = searchParams.get('teams')
+    if (teamsParam) {
+      const decodedGameInfo = JSON.parse(decodeURIComponent(teamsParam))
+      setGameInfo(decodedGameInfo)
     }
-
-    fetchEventAndStreams()
-  }, [])
+  }, [searchParams])
 
   const dummyStreamers = [
     {
@@ -56,9 +57,24 @@ export default function EventStreamersPage() {
     },
   ]
 
-  const handleListenNow = (streamerId: string) => {
-    const eventId = 'selected-event-id' // Replace with actual event ID
-    router.push(`/events/${eventId}/streamers/${streamerId}`)
+  const handleListenNow = (streamer: Streamer) => {
+    if (gameInfo) {
+      const pageInfo = {
+        game: gameInfo,
+        streamer: {
+          id: streamer.id,
+          name: streamer.name,
+          listeners: streamer.listeners,
+          description: streamer.description,
+        },
+      }
+
+      router.push(
+        `/events/${gameInfo.id}/streamers/${streamer.id}?info=${encodeURIComponent(
+          JSON.stringify(pageInfo),
+        )}`,
+      )
+    }
   }
 
   return (
@@ -70,8 +86,12 @@ export default function EventStreamersPage() {
         margin: '0 auto',
       }}
     >
-      <Title level={2} style={{ fontSize: '50px' }}>
-        Live Commentators for Super Bowl LIII {eventName}
+      <Title level={2} style={{ fontSize: '45px' }}>
+        {' '}
+        {gameInfo
+          ? `${gameInfo.awayTeam} @ ${gameInfo.homeTeam}`
+          : 'Loading...'}{' '}
+        - who's live?
       </Title>
       <Card style={{ backgroundColor: '#81A18B' }} bordered={false}>
         <List
@@ -82,7 +102,7 @@ export default function EventStreamersPage() {
               actions={[
                 <Button
                   type="primary"
-                  onClick={() => handleListenNow(item.id)}
+                  onClick={() => handleListenNow(item)}
                   style={{
                     color: 'black',
                     fontWeight: 'bold',
@@ -99,15 +119,14 @@ export default function EventStreamersPage() {
                 title={
                   <Text strong style={{ fontSize: '30px' }}>
                     {item.streamer?.name || item.name}
-                    <br></br>
+                    <br />
                   </Text>
                 }
                 description={
                   <div style={{ fontSize: '20px' }}>
                     <Text>{item.description || 'N/A'}</Text>
-                    <br></br>
-                    <br></br>
-
+                    <br />
+                    <br />
                     <Text style={{ fontSize: '18px', fontStyle: 'italic' }}>
                       Listeners: {item.listeners || 'N/A'}
                     </Text>

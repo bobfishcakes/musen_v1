@@ -1,43 +1,72 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import {
-  Typography,
-  Row,
-  Col,
-  Button,
-  Input,
-  List,
-  Avatar,
-  Space,
-  Form,
-  InputNumber,
-} from 'antd'
 import {
   CommentOutlined,
   DollarOutlined,
   HeartOutlined,
-  PlayCircleOutlined,
 } from '@ant-design/icons'
-const { Title, Text, Paragraph } = Typography
-import { useAuthentication } from '@web/modules/authentication'
-import dayjs from 'dayjs'
-import { useSnackbar } from 'notistack'
-import { useRouter, useParams } from 'next/navigation'
 import { Api, Model } from '@web/domain'
 import { PageLayout } from '@web/layouts/Page.layout'
+import { useAuthentication } from '@web/modules/authentication'
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  List,
+  Row,
+  Space,
+  Typography,
+} from 'antd'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useSnackbar } from 'notistack'
+import { useEffect, useState } from 'react'
+
+const { Title, Text: TypographyText } = Typography
+
+interface GameInfo {
+  id: string
+  homeTeam: string
+  awayTeam: string
+  league: string
+}
+
+interface StreamerInfo {
+  id: string
+  name: string
+  listeners: number
+  description: string
+}
+
+interface PageInfo {
+  game: GameInfo
+  streamer: StreamerInfo
+}
 
 export default function UserStreamPage() {
   const router = useRouter()
   const params = useParams<any>()
+  const searchParams = useSearchParams()
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
 
+  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
   const [stream, setStream] = useState<Model.Stream | null>(null)
   const [comments, setComments] = useState<Model.Comment[]>([])
   const [newComment, setNewComment] = useState<string>('')
   const [donationAmount, setDonationAmount] = useState<number>(0)
+
+  useEffect(() => {
+    const infoParam = searchParams.get('info')
+    if (infoParam) {
+      const decodedInfo = JSON.parse(decodeURIComponent(infoParam))
+      setPageInfo(decodedInfo)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const fetchStream = async () => {
@@ -56,10 +85,7 @@ export default function UserStreamPage() {
   }, [params.streamId])
 
   const handleCommentSubmit = async () => {
-    if (!newComment.trim()) {
-      return
-    }
-
+    if (!newComment.trim()) return
     try {
       const comment = await Api.Comment.createOneByStreamId(params.streamId, {
         content: newComment,
@@ -74,10 +100,7 @@ export default function UserStreamPage() {
   }
 
   const handleDonationSubmit = async () => {
-    if (donationAmount <= 0) {
-      return
-    }
-
+    if (donationAmount <= 0) return
     try {
       await Api.Donation.createOneByUserId(userId, {
         amount: donationAmount,
@@ -105,83 +128,106 @@ export default function UserStreamPage() {
 
   return (
     <PageLayout layout="narrow">
-      <Title level={2}>Live Stream</Title>
-      <Paragraph>
-        Follow the live sporting event and interact with the streamer and other
-        listeners.
-      </Paragraph>
-      {stream && (
+      {pageInfo && (
         <div>
+          <Title level={2}>
+            {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @{' '}
+            {pageInfo.game.homeTeam}
+          </Title>
+
+          <TypographyText style={{ display: 'block', marginBottom: '16px' }}>
+            Current Listeners: {pageInfo.streamer.listeners}
+          </TypographyText>
+
+          {/* Chat Section */}
           <Row gutter={[16, 16]}>
             <Col span={24}>
-              <Title level={4}>{stream.streamer?.name}'s Stream</Title>
-              <Space>
-                <Button type="primary" icon={<PlayCircleOutlined />}>
-                  Listen to Stream
-                </Button>
+              <Card>
+                <List
+                  className="chat-box"
+                  style={{
+                    height: '200px',
+                    overflowY: 'auto',
+                    marginBottom: '16px',
+                  }}
+                  dataSource={comments}
+                  renderItem={comment => (
+                    <List.Item key={comment.id}>
+                      <List.Item.Meta
+                        avatar={<Avatar src={comment.user?.pictureUrl} />}
+                        title={comment.user?.name}
+                        description={comment.content}
+                      />
+                    </List.Item>
+                  )}
+                />
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
+                  <Input.TextArea
+                    rows={2}
+                    value={newComment}
+                    onChange={e => setNewComment(e.target.value)}
+                    placeholder="Type your comment here..."
+                  />
+                  <Button
+                    style={{
+                      alignSelf: 'center',
+                      backgroundColor: '#81A18B',
+                      color: 'black',
+                    }}
+                    onClick={handleCommentSubmit}
+                    icon={<CommentOutlined />}
+                  >
+                    Comment
+                  </Button>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Support Cards Row */}
+          <Row gutter={16} style={{ marginTop: '16px' }}>
+            <Col span={12}>
+              <Card title="Want to show support?">
+                <Form layout="inline" onFinish={handleDonationSubmit}>
+                  <Space>
+                    <InputNumber
+                      min={1}
+                      value={donationAmount}
+                      onChange={value => setDonationAmount(value ? value : 0)}
+                      placeholder="Amount"
+                    />
+                    <Button
+                      style={{ backgroundColor: '#81A18B', color: 'black' }}
+                      htmlType="submit"
+                      icon={<DollarOutlined />}
+                    >
+                      Donate
+                    </Button>
+                  </Space>
+                </Form>
+              </Card>
+            </Col>
+
+            <Col span={12}>
+              <Card title="Want exclusive content?">
                 <Button
-                  type="default"
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#81A18B',
+                    color: 'black',
+                  }}
                   icon={<HeartOutlined />}
                   onClick={handleSubscribe}
                 >
-                  Subscribe
+                  Subscribe to {pageInfo.streamer.name}
                 </Button>
-              </Space>
-            </Col>
-            <Col span={24}>
-              <Title level={5}>
-                Game Time Remaining: {stream.gameTimeRemaining}
-              </Title>
-            </Col>
-            <Col span={24}>
-              <Title level={5}>Donate to Support</Title>
-              <Form layout="inline" onFinish={handleDonationSubmit}>
-                <Form.Item>
-                  <InputNumber
-                    min={1}
-                    value={donationAmount}
-                    onChange={value => setDonationAmount(value ? value : 0)}
-                    placeholder="Amount"
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    icon={<DollarOutlined />}
-                  >
-                    Donate
-                  </Button>
-                </Form.Item>
-              </Form>
-            </Col>
-            <Col span={24}>
-              <Title level={5}>Live Chat</Title>
-              <List
-                dataSource={comments}
-                renderItem={comment => (
-                  <List.Item key={comment.id}>
-                    <List.Item.Meta
-                      avatar={<Avatar src={comment.user?.pictureUrl} />}
-                      title={comment.user?.name}
-                      description={comment.content}
-                    />
-                  </List.Item>
-                )}
-              />
-              <Input.TextArea
-                rows={4}
-                value={newComment}
-                onChange={e => setNewComment(e.target.value)}
-                placeholder="Type your comment here..."
-              />
-              <Button
-                type="primary"
-                onClick={handleCommentSubmit}
-                icon={<CommentOutlined />}
-              >
-                Comment
-              </Button>
+              </Card>
             </Col>
           </Row>
         </div>

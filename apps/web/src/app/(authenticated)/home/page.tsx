@@ -152,8 +152,17 @@ export default function HomePage() {
     fetchUserProfile()
   }, [userId, enqueueSnackbar])
 
-  const navigateToStream = gameId => {
-    router.push(`/events/${gameId}/streamers`)
+  const navigateToStream = (gameId: string, game: Game) => {
+    const gameInfo = {
+      id: gameId,
+      homeTeam: game.teams.home.name,
+      awayTeam: game.teams.away.name,
+      league: game.league.name,
+    }
+
+    router.push(
+      `/events/${gameId}/streamers?teams=${encodeURIComponent(JSON.stringify(gameInfo))}`,
+    )
   }
 
   const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
@@ -182,7 +191,10 @@ export default function HomePage() {
               </span>
             }
           />
-          <Button type="primary" onClick={() => navigateToStream(game.id)}>
+          <Button
+            type="primary"
+            onClick={() => navigateToStream(game.id, game)}
+          >
             <span style={{ fontSize: '20px', color: 'black' }}>listen now</span>
           </Button>
         </List.Item>
@@ -190,86 +202,117 @@ export default function HomePage() {
     />
   )
 
+  // [Previous imports and interfaces remain the same]
+
   return (
     <PageLayout layout="narrow">
-      <Row justify="center" style={{ marginBottom: '40px' }}>
+      <Row
+        justify="space-between"
+        align="middle"
+        style={{ marginBottom: '10px', marginTop: '-70px' }} // Reduced top margin
+      >
         <Col>
           <Title
             level={2}
             style={{
               fontSize: '125px',
               marginBottom: '20px',
-              marginLeft: '85px',
+              marginLeft: '150px',
             }}
           >
             musen
           </Title>
           <Title
             level={2}
-            style={{ fontSize: '35px', fontWeight: 'normal', marginTop: '0px' }}
+            style={{
+              fontSize: '35px',
+              fontWeight: 'normal',
+              marginTop: '20px',
+              marginLeft: '60px',
+            }}
           >
             sports commentary how you want it
           </Title>
         </Col>
+        <Col>
+          <img
+            src="/musen_logo.png"
+            width={240}
+            height={240}
+            style={{
+              borderRadius: '10px',
+              marginRight: '65px',
+              marginTop: '100px', // Reduced top margin from 120px to 20px
+            }}
+          />
+        </Col>
       </Row>
 
       {/* NFL Games */}
-      <Row gutter={16}>
-        <Col span={24}>
-          <Card
-            title={<span style={{ fontSize: '30px' }}>NFL Games</span>}
-            bordered={false}
-          >
-            <GameList games={nflGames} icon={solidIcons.faFootballBall} />
-          </Card>
-        </Col>
-      </Row>
+      {nflGames.length > 0 && (
+        <Row gutter={16}>
+          <Col span={24}>
+            <Card
+              title={<span style={{ fontSize: '30px' }}>NFL Games</span>}
+              bordered={false}
+            >
+              <GameList games={nflGames} icon={solidIcons.faFootballBall} />
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       {/* NCAA Football Games */}
-      <Row gutter={16} style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card
-            title={
-              <span style={{ fontSize: '30px' }}>NCAA Football Games</span>
-            }
-            bordered={false}
-          >
-            <GameList
-              games={ncaaFootballGames}
-              icon={solidIcons.faFootballBall}
-            />
-          </Card>
-        </Col>
-      </Row>
+      {ncaaFootballGames.length > 0 && (
+        <Row gutter={16} style={{ marginTop: '20px' }}>
+          <Col span={24}>
+            <Card
+              title={
+                <span style={{ fontSize: '30px' }}>NCAA Football Games</span>
+              }
+              bordered={false}
+            >
+              <GameList
+                games={ncaaFootballGames}
+                icon={solidIcons.faFootballBall}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       {/* NBA Games */}
-      <Row gutter={16} style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card
-            title={<span style={{ fontSize: '30px' }}>NBA Games</span>}
-            bordered={false}
-          >
-            <GameList games={nbaGames} icon={solidIcons.faBasketballBall} />
-          </Card>
-        </Col>
-      </Row>
+      {nbaGames.length > 0 && (
+        <Row gutter={16} style={{ marginTop: '20px' }}>
+          <Col span={24}>
+            <Card
+              title={<span style={{ fontSize: '30px' }}>NBA Games</span>}
+              bordered={false}
+            >
+              <GameList games={nbaGames} icon={solidIcons.faBasketballBall} />
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       {/* NCAA Basketball Games */}
-      <Row gutter={16} style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card
-            title={
-              <span style={{ fontSize: '30px' }}>NCAA Basketball Games</span>
-            }
-            bordered={false}
-          >
-            <GameList
-              games={ncaaBasketballGames}
-              icon={solidIcons.faBasketballBall}
-            />
-          </Card>
-        </Col>
-      </Row>
+      {ncaaBasketballGames.length > 0 && (
+        <Row gutter={16} style={{ marginTop: '20px' }}>
+          <Col span={24}>
+            <Card
+              title={
+                <span style={{ fontSize: '30px' }}>NCAA Basketball Games</span>
+              }
+              bordered={false}
+            >
+              <GameList
+                games={ncaaBasketballGames}
+                icon={solidIcons.faBasketballBall}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       {/* User Profile Section */}
       <Row gutter={16} style={{ marginTop: '75px' }}>
