@@ -21,6 +21,7 @@ import {
   Space,
   Typography,
 } from 'antd'
+import { UserStatus } from 'apps/web/src/domain/user/user.model'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
@@ -46,6 +47,82 @@ interface PageInfo {
   streamer: StreamerInfo
 }
 
+const initialComments: Model.Comment[] = [
+  {
+    id: 'dummy1',
+    content:
+      "Home team's defense is looking solid tonight. Spread might be too wide.",
+    user: {
+      id: 'bot1',
+      name: 'oldhead56',
+      pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=expert',
+      status: 'VERIFIED' as UserStatus,
+      dateCreated: new Date(Date.now() - 300000).toISOString(),
+      dateUpdated: new Date(Date.now() - 300000).toISOString(),
+    },
+    commentTime: new Date(Date.now() - 300000).toISOString(),
+    dateCreated: new Date(Date.now() - 300000).toISOString(),
+    dateUpdated: new Date(Date.now() - 300000).toISOString(),
+    dateDeleted: new Date(Date.now() - 300000).toISOString(),
+    streamId: 'dummy-stream-1',
+    userId: 'bot1',
+  },
+  {
+    id: 'dummy2',
+    content: 'Line just moved to -3.5. Sharp money coming in...',
+    user: {
+      id: 'bot2',
+      name: 'bullslover23',
+      pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=watcher',
+      status: 'VERIFIED' as UserStatus,
+      dateCreated: new Date(Date.now() - 240000).toISOString(),
+      dateUpdated: new Date(Date.now() - 240000).toISOString(),
+    },
+    commentTime: new Date(Date.now() - 240000).toISOString(),
+    dateCreated: new Date(Date.now() - 240000).toISOString(),
+    dateUpdated: new Date(Date.now() - 240000).toISOString(),
+    dateDeleted: new Date(Date.now() - 240000).toISOString(),
+    streamId: 'dummy-stream-1',
+    userId: 'bot2',
+  },
+  {
+    id: 'dummy3',
+    content: 'Over/Under set at 47.5. Weather looks good for scoring.',
+    user: {
+      id: 'bot3',
+      name: 'marissa87',
+      pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=pro',
+      status: 'VERIFIED' as UserStatus,
+      dateCreated: new Date(Date.now() - 180000).toISOString(),
+      dateUpdated: new Date(Date.now() - 180000).toISOString(),
+    },
+    commentTime: new Date(Date.now() - 180000).toISOString(),
+    dateCreated: new Date(Date.now() - 180000).toISOString(),
+    dateUpdated: new Date(Date.now() - 180000).toISOString(),
+    dateDeleted: new Date(Date.now() - 180000).toISOString(),
+    streamId: 'dummy-stream-1',
+    userId: 'bot3',
+  },
+  {
+    id: 'dummy4',
+    content: 'Lavine just cleared to play - this changes everything!',
+    user: {
+      id: 'bot4',
+      name: 'kfreeman23',
+      pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=insider',
+      status: 'VERIFIED' as UserStatus,
+      dateCreated: new Date(Date.now() - 120000).toISOString(),
+      dateUpdated: new Date(Date.now() - 120000).toISOString(),
+    },
+    commentTime: new Date(Date.now() - 120000).toISOString(),
+    dateCreated: new Date(Date.now() - 120000).toISOString(),
+    dateUpdated: new Date(Date.now() - 120000).toISOString(),
+    dateDeleted: new Date(Date.now() - 120000).toISOString(),
+    streamId: 'dummy-stream-1',
+    userId: 'bot4',
+  },
+]
+
 export default function UserStreamPage() {
   const router = useRouter()
   const params = useParams<any>()
@@ -56,7 +133,7 @@ export default function UserStreamPage() {
 
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
   const [stream, setStream] = useState<Model.Stream | null>(null)
-  const [comments, setComments] = useState<Model.Comment[]>([])
+  const [comments, setComments] = useState<Model.Comment[]>(initialComments)
   const [newComment, setNewComment] = useState<string>('')
   const [donationAmount, setDonationAmount] = useState<number>(0)
 
@@ -75,7 +152,7 @@ export default function UserStreamPage() {
           includes: ['streamer', 'comments.user'],
         })
         setStream(streamData)
-        setComments(streamData.comments || [])
+        setComments([...initialComments, ...(streamData.comments || [])])
       } catch (error) {
         enqueueSnackbar('Failed to load stream data', { variant: 'error' })
       }
@@ -139,14 +216,13 @@ export default function UserStreamPage() {
             Current Listeners: {pageInfo.streamer.listeners}
           </TypographyText>
 
-          {/* Chat Section */}
           <Row gutter={[16, 16]}>
             <Col span={24}>
               <Card>
                 <List
                   className="chat-box"
                   style={{
-                    height: '200px',
+                    height: '400px',
                     overflowY: 'auto',
                     marginBottom: '16px',
                   }}
@@ -190,7 +266,6 @@ export default function UserStreamPage() {
             </Col>
           </Row>
 
-          {/* Support Cards Row */}
           <Row gutter={16} style={{ marginTop: '16px' }}>
             <Col span={12}>
               <Card title="Want to show support?">
