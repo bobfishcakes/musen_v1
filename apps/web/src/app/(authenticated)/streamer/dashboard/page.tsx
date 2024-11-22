@@ -10,17 +10,7 @@ import { AmericanFootballApi } from '@web/domain/americanFootball/americanFootba
 import { BasketballApi } from '@web/domain/basketball/basketball.api'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  List,
-  Row,
-  Select,
-  Spin,
-  Typography,
-} from 'antd'
+import { Avatar, Button, Card, Col, List, Row, Select, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
@@ -28,6 +18,42 @@ import { useEffect, useState } from 'react'
 
 const { Title, Text, Paragraph } = Typography
 const { Option } = Select
+
+const dummyEarnings: DummyEarning[] = [
+  {
+    id: '1',
+    amount: 25.0,
+    earningTime: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+  },
+  {
+    id: '2',
+    amount: 15.5,
+    earningTime: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+  },
+  {
+    id: '3',
+    amount: 30.25,
+    earningTime: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+  },
+]
+
+const dummyClips: DummyClip[] = [
+  {
+    id: '1',
+    url: 'https://example.com/clip1',
+    creationTime: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: '2',
+    url: 'https://example.com/clip2',
+    creationTime: new Date(Date.now() - 172800000).toISOString(),
+  },
+  {
+    id: '3',
+    url: 'https://example.com/clip3',
+    creationTime: new Date(Date.now() - 259200000).toISOString(),
+  },
+]
 
 interface GameTeam {
   name: string
@@ -56,6 +82,37 @@ interface Game {
   game?: {
     date: GameDate
   }
+}
+
+interface GameInfo {
+  id: string
+  homeTeam: string
+  awayTeam: string
+  league: string
+}
+
+interface StreamerInfo {
+  id: string
+  name: string
+  listeners: number
+  description: string
+}
+
+interface PageInfo {
+  game: GameInfo
+  streamer: StreamerInfo
+}
+
+interface DummyClip {
+  id: string
+  url: string
+  creationTime: string
+}
+
+interface DummyEarning {
+  id: string
+  amount: number
+  earningTime: string
 }
 
 export default function StreamerDashboardPage() {
@@ -128,6 +185,7 @@ export default function StreamerDashboardPage() {
         const ncaaBasketballGames = basketballResponse.response.filter(
           game => game.league?.name === 'NCAA' || game.league?.alias === 'NCAA',
         )
+
         const formattedEvents: Model.SportingEvent[] = [
           ...nflGames,
           ...ncaaFootballGames,
@@ -149,16 +207,6 @@ export default function StreamerDashboardPage() {
           streams: [],
         }))
 
-        // Filter unique events using Object.values and reduce
-        const uniqueEvents = Object.values(
-          formattedEvents.reduce(
-            (acc, event) => {
-              acc[event.id] = event
-              return acc
-            },
-            {} as Record<string, Model.SportingEvent>,
-          ),
-        )
         setSportingEvents(formattedEvents)
       } catch (error) {
         console.error('Error fetching games:', error)
@@ -171,20 +219,46 @@ export default function StreamerDashboardPage() {
 
   const handleStartStream = () => {
     if (selectedEvent && userId) {
-      Api.Stream.createOneBySportingEventId(selectedEvent, {
-        streamerId: userId,
-      })
-        .then(stream =>
-          router.push(`/events/${selectedEvent}/streamers/${userId}`),
-        )
-        .catch(error => enqueueSnackbar(error.message, { variant: 'error' }))
+      const selectedEventDetails = sportingEvents.find(
+        event => event.id === selectedEvent,
+      )
+
+      if (selectedEventDetails) {
+        // Parse the event name to get teams and league
+        const [awayTeam, rest] = selectedEventDetails.name.split(' @ ')
+        const [homeTeam, league] = rest.split(' - ')
+
+        // Create the page info object
+        const pageInfo: PageInfo = {
+          game: {
+            id: selectedEventDetails.id,
+            homeTeam: homeTeam,
+            awayTeam: awayTeam,
+            league: league,
+          },
+          streamer: {
+            id: userId,
+            name: user?.name || 'Unknown Streamer',
+            listeners: 0,
+            description: selectedEventDetails.description || '',
+          },
+        }
+
+        Api.Stream.createOneBySportingEventId(selectedEvent, {
+          streamerId: userId,
+        })
+          .then(stream => {
+            router.push(
+              `/streamer/dashboard/live?info=${encodeURIComponent(
+                JSON.stringify(pageInfo),
+              )}`,
+            )
+          })
+          .catch(error => enqueueSnackbar(error.message, { variant: 'error' }))
+      }
     } else {
       enqueueSnackbar('Please select a sporting event', { variant: 'error' })
     }
-  }
-
-  if (loading) {
-    return <Spin size="large" />
   }
 
   return (
@@ -199,7 +273,9 @@ export default function StreamerDashboardPage() {
           <Card
             title={
               <>
-                <DollarCircleOutlined style={{ marginRight: 8 }} />
+                <DollarCircleOutlined
+                  style={{ marginRight: 8, color: 'black' }}
+                />
                 Your Earnings
               </>
             }
@@ -207,12 +283,35 @@ export default function StreamerDashboardPage() {
           >
             <List
               itemLayout="horizontal"
-              dataSource={user?.earningsAsStreamer}
+              dataSource={[
+                {
+                  id: '1',
+                  amount: 25.0,
+                  earningTime: new Date(Date.now() - 86400000).toISOString(),
+                },
+                {
+                  id: '2',
+                  amount: 15.5,
+                  earningTime: new Date(Date.now() - 172800000).toISOString(),
+                },
+                {
+                  id: '3',
+                  amount: 30.25,
+                  earningTime: new Date(Date.now() - 259200000).toISOString(),
+                },
+              ]}
               renderItem={earning => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar icon={<DollarCircleOutlined />} />}
-                    title={`$${earning.amount}`}
+                    avatar={
+                      <Avatar
+                        icon={
+                          <DollarCircleOutlined style={{ color: 'black' }} />
+                        }
+                        style={{ backgroundColor: 'transparent' }}
+                      />
+                    }
+                    title={`$${earning.amount.toFixed(2)}`}
                     description={dayjs(earning.earningTime).format(
                       'MMMM D, YYYY',
                     )}
@@ -226,7 +325,9 @@ export default function StreamerDashboardPage() {
           <Card
             title={
               <>
-                <VideoCameraOutlined style={{ marginRight: 8 }} />
+                <VideoCameraOutlined
+                  style={{ marginRight: 8, color: 'black' }}
+                />
                 Pre-generated Clips
               </>
             }
@@ -234,13 +335,34 @@ export default function StreamerDashboardPage() {
           >
             <List
               itemLayout="horizontal"
-              dataSource={user?.streamsAsStreamer?.flatMap(
-                stream => stream.clips,
-              )}
+              dataSource={[
+                {
+                  id: '1',
+                  url: 'https://example.com/clip1',
+                  creationTime: new Date(Date.now() - 86400000).toISOString(),
+                },
+                {
+                  id: '2',
+                  url: 'https://example.com/clip2',
+                  creationTime: new Date(Date.now() - 172800000).toISOString(),
+                },
+                {
+                  id: '3',
+                  url: 'https://example.com/clip3',
+                  creationTime: new Date(Date.now() - 259200000).toISOString(),
+                },
+              ]}
               renderItem={clip => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar icon={<VideoCameraOutlined />} />}
+                    avatar={
+                      <Avatar
+                        icon={
+                          <VideoCameraOutlined style={{ color: 'black' }} />
+                        }
+                        style={{ backgroundColor: 'transparent' }}
+                      />
+                    }
                     title={
                       <a
                         href={clip.url}
@@ -270,12 +392,8 @@ export default function StreamerDashboardPage() {
             bordered={false}
           >
             <Select
-              style={{
-                width: '100%',
-              }}
-              dropdownStyle={{
-                backgroundColor: '#628A6E',
-              }}
+              style={{ width: '100%' }}
+              dropdownStyle={{ backgroundColor: '#628A6E' }}
               className="custom-select"
               placeholder="Select a sporting event"
               onChange={value => setSelectedEvent(value)}

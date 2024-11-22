@@ -54,7 +54,7 @@ const initialComments: Model.Comment[] = [
       "Home team's defense is looking solid tonight. Spread might be too wide.",
     user: {
       id: 'bot1',
-      name: 'oldhead56',
+      name: 'oldhead563',
       pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=expert',
       status: 'VERIFIED' as UserStatus,
       dateCreated: new Date(Date.now() - 300000).toISOString(),
