@@ -172,14 +172,16 @@ export default function HomePage() {
       renderItem={game => (
         <List.Item>
           <List.Item.Meta
-            avatar={<FontAwesomeIcon icon={icon} />}
+            avatar={
+              <FontAwesomeIcon icon={icon} style={{ color: '#FFFFFF' }} />
+            }
             title={
               <span style={{ fontSize: '22px' }}>
                 {game.teams.away.name} @ {game.teams.home.name}
               </span>
             }
             description={
-              <span style={{ fontSize: '16px' }}>
+              <span style={{ fontSize: '16px', color: '#BAE0C0' }}>
                 Start time:{' '}
                 {game.date
                   ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
@@ -195,59 +197,62 @@ export default function HomePage() {
             type="primary"
             onClick={() => navigateToStream(game.id, game)}
           >
-            <span style={{ fontSize: '20px', color: 'black' }}>listen now</span>
+            <span style={{ fontSize: '20px', color: '#FFFFFF' }}>
+              listen now
+            </span>
           </Button>
         </List.Item>
       )}
     />
   )
 
-  // [Previous imports and interfaces remain the same]
-
   return (
     <PageLayout layout="narrow">
-      <Row
-        justify="space-between"
-        align="middle"
-        style={{ marginBottom: '10px', marginTop: '-70px' }} // Reduced top margin
-      >
-        <Col>
-          <Title
-            level={2}
+      <Row justify="center" style={{ marginTop: '20px' }}>
+        <Col xs={24} sm={24} md={20} lg={18}>
+          <Card
+            bordered={false}
             style={{
-              fontSize: '125px',
-              marginBottom: '20px',
-              marginLeft: '150px',
+              //padding: '40px 20px',
+              width: '800px',
             }}
           >
-            musen
-          </Title>
-          <Title
-            level={2}
-            style={{
-              fontSize: '35px',
-              fontWeight: 'normal',
-              marginTop: '20px',
-              marginLeft: '60px',
-            }}
-          >
-            sports commentary how you want it
-          </Title>
-        </Col>
-        <Col>
-          <img
-            src="/musen_logo.png"
-            width={240}
-            height={240}
-            style={{
-              borderRadius: '10px',
-              marginRight: '65px',
-              marginTop: '100px', // Reduced top margin from 120px to 20px
-            }}
-          />
+            <Row justify="center">
+              <Col span={24} style={{ textAlign: 'center' }}>
+                <Title
+                  level={2}
+                  style={{
+                    fontSize: '125px',
+                    marginBottom: '20px',
+                  }}
+                >
+                  musen
+                </Title>
+                <Title
+                  level={2}
+                  style={{
+                    fontSize: '35px',
+                    fontWeight: 'normal',
+                    marginTop: '20px',
+                    color: '#BAE0C0',
+                  }}
+                >
+                  sports commentary how you want it
+                </Title>
+                <img
+                  src="/musen_logo.png"
+                  width={240}
+                  height={240}
+                  style={{
+                    borderRadius: '10px',
+                    marginTop: '20px',
+                  }}
+                />
+              </Col>
+            </Row>
+          </Card>
         </Col>
       </Row>
-
       {/* NFL Games */}
       {nflGames.length > 0 && (
         <Row gutter={16}>
@@ -261,7 +266,6 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-
       {/* NCAA Football Games */}
       {ncaaFootballGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
@@ -280,7 +284,6 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-
       {/* NBA Games */}
       {nbaGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
@@ -294,7 +297,6 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-
       {/* NCAA Basketball Games */}
       {ncaaBasketballGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
@@ -313,7 +315,6 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-
       {/* User Profile Section */}
       <Row gutter={16} style={{ marginTop: '75px' }}>
         <Col span={24}>
