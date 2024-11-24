@@ -7,16 +7,16 @@ export const Theme = {
   algorithm: theme.darkAlgorithm,
   token: {
     // Colors
-    colorPrimary: '#628A6E', // dark green ribbon text color
+    colorPrimary: '#3A5241', // dark green ribbon text color
     colorPrimaryBg: 'black', // unknown
     colorError: '#ff4d4f',
     colorInfo: '#1677ff',
     colorSuccess: '#52c41a',
     colorWarning: '#faad14',
-    colorTextBase: '#000000', // black main text color
-    colorLink: '#000000', // black hyperlink text color
+    colorTextBase: '#FFFFFF', // white main text color
+    colorLink: '#FFFFFF', // white hyperlink text color
     colorBgBase: '#0e0e10', //
-    colorBgContainer: '#81A18B', // green table color is 81A18B
+    colorBgContainer: '#3A5241', // green table color is 81A18B
 
     // Typography
     fontFamily: `${amaranthFont.style.fontFamily}, -apple-system, 'Inconsolate'`,
@@ -43,7 +43,7 @@ export const Theme = {
     Layout: {
       headerBg: '#81A18B', // light green
       footerBg: '#81A18B', // light green
-      bodyBg: '#628A6E', // dark green
+      bodyBg: '#000000', // dark green (v1 green is 628A6E)
       siderBg: '#18181b', // Updated to match the dark sidebar background
     },
     Menu: {
