@@ -41,8 +41,8 @@ export const Theme = {
       itemMarginBottom: '22px',
     },
     Layout: {
-      headerBg: '#81A18B', // light green
-      footerBg: '#81A18B', // light green
+      headerBg: '#1f1f23', // light green
+      footerBg: '#1f1f23', // light green
       bodyBg: '#000000', // dark green (v1 green is 628A6E)
       siderBg: '#18181b', // Updated to match the dark sidebar background
     },
