@@ -203,6 +203,8 @@ export default function UserStreamPage() {
     }
   }
 
+  // ... (previous imports and code remain the same)
+
   return (
     <PageLayout layout="narrow">
       {pageInfo && (
@@ -218,7 +220,7 @@ export default function UserStreamPage() {
 
           <Row gutter={[16, 16]}>
             <Col span={24}>
-              <Card>
+              <Card style={{ border: '1px solid white' }}>
                 <List
                   className="chat-box"
                   style={{
@@ -244,20 +246,37 @@ export default function UserStreamPage() {
                     gap: '8px',
                   }}
                 >
+                  <style jsx global>{`
+                    .ant-input-textarea textarea {
+                      border: 1px solid white !important;
+                      box-shadow: none !important;
+                    }
+                    .ant-input-textarea textarea:focus {
+                      border-color: white !important;
+                      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+                    }
+                    .ant-input-textarea textarea:hover {
+                      border-color: white !important;
+                    }
+                  `}</style>
                   <Input.TextArea
                     rows={2}
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
                     placeholder="Type your comment here..."
+                    style={{
+                      border: '1px solid white',
+                      borderRadius: '4px',
+                    }}
                   />
                   <Button
                     style={{
                       alignSelf: 'center',
                       backgroundColor: '#81A18B',
-                      color: 'black',
+                      color: 'white',
                     }}
                     onClick={handleCommentSubmit}
-                    icon={<CommentOutlined />}
+                    icon={<CommentOutlined style={{ color: 'white' }} />}
                   >
                     Comment
                   </Button>
@@ -268,7 +287,10 @@ export default function UserStreamPage() {
 
           <Row gutter={16} style={{ marginTop: '16px' }}>
             <Col span={12}>
-              <Card title="Want to show support?">
+              <Card
+                title="Want to show support?"
+                style={{ border: '1px solid white' }}
+              >
                 <Form layout="inline" onFinish={handleDonationSubmit}>
                   <Space>
                     <InputNumber
@@ -276,11 +298,15 @@ export default function UserStreamPage() {
                       value={donationAmount}
                       onChange={value => setDonationAmount(value ? value : 0)}
                       placeholder="Amount"
+                      style={{ borderColor: 'white' }}
                     />
                     <Button
-                      style={{ backgroundColor: '#81A18B', color: 'black' }}
+                      style={{
+                        backgroundColor: '#81A18B',
+                        color: 'white',
+                      }}
                       htmlType="submit"
-                      icon={<DollarOutlined />}
+                      icon={<DollarOutlined style={{ color: 'white' }} />}
                     >
                       Donate
                     </Button>
@@ -290,14 +316,17 @@ export default function UserStreamPage() {
             </Col>
 
             <Col span={12}>
-              <Card title="Want exclusive content?">
+              <Card
+                title="Want exclusive content?"
+                style={{ border: '1px solid white' }}
+              >
                 <Button
                   style={{
                     width: '100%',
                     backgroundColor: '#81A18B',
-                    color: 'black',
+                    color: 'white',
                   }}
-                  icon={<HeartOutlined />}
+                  icon={<HeartOutlined style={{ color: 'white' }} />}
                   onClick={handleSubscribe}
                 >
                   Subscribe to {pageInfo.streamer.name}

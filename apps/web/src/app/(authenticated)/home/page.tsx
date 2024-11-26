@@ -161,8 +161,26 @@ export default function HomePage() {
     }
 
     router.push(
-      `/events/${gameId}/streamers?teams=${encodeURIComponent(JSON.stringify(gameInfo))}`,
+      `/events/${gameId}/streamers?teams=${encodeURIComponent(
+        JSON.stringify(gameInfo),
+      )}`,
     )
+  }
+
+  const cardStyle = {
+    border: '1px solid white',
+    opacity: 1.0,
+    backgroundColor: '#3A5241',
+    backgroundImage: `
+      radial-gradient(farthest-side at -33.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 0 70px,
+      radial-gradient(farthest-side at 50% 133.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 70px 0,
+      radial-gradient(farthest-side at 133.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%),
+      radial-gradient(farthest-side at 50% -33.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%)
+    `,
+    backgroundSize: 'calc(140px/4.667) 140px, 140px calc(140px/4.667)',
+    backgroundRepeat: 'repeat',
+    backgroundPosition: '0 0',
+    marginBottom: '20px', // Add spacing between cards
   }
 
   const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
@@ -196,6 +214,10 @@ export default function HomePage() {
           <Button
             type="primary"
             onClick={() => navigateToStream(game.id, game)}
+            style={{
+              backgroundColor: '#3A5241',
+              borderColor: '#3A5241',
+            }}
           >
             <span style={{ fontSize: '20px', color: '#FFFFFF' }}>
               listen now
@@ -208,14 +230,11 @@ export default function HomePage() {
 
   return (
     <PageLayout layout="narrow">
-      <Row justify="center" style={{ marginTop: '20px' }}>
+      <Row justify="center" style={{ marginTop: '20px', marginBottom: '40px' }}>
         <Col xs={24} sm={24} md={20} lg={18}>
           <Card
             bordered={false}
-            style={{
-              //padding: '40px 20px',
-              width: '800px',
-            }}
+            style={{ ...cardStyle, width: '800px', padding: '10px 20px' }}
           >
             <Row justify="center">
               <Col span={24} style={{ textAlign: 'center' }}>
@@ -223,7 +242,7 @@ export default function HomePage() {
                   level={2}
                   style={{
                     fontSize: '125px',
-                    marginBottom: '20px',
+                    marginBottom: '10px', // Reduced bottom margin
                   }}
                 >
                   musen
@@ -233,7 +252,8 @@ export default function HomePage() {
                   style={{
                     fontSize: '35px',
                     fontWeight: 'normal',
-                    marginTop: '20px',
+                    marginTop: '10px', // Reduced top margin
+                    marginBottom: '10px', // Reduced bottom margin
                     color: '#BAE0C0',
                   }}
                 >
@@ -241,11 +261,12 @@ export default function HomePage() {
                 </Title>
                 <img
                   src="/musen_logo.png"
-                  width={240}
-                  height={240}
+                  width={180} // Reduced from 240
+                  height={180} // Reduced from 240
                   style={{
                     borderRadius: '10px',
-                    marginTop: '20px',
+                    marginTop: '10px', // Reduced top margin
+                    marginBottom: '10px', // Added bottom margin
                   }}
                 />
               </Col>
@@ -253,20 +274,21 @@ export default function HomePage() {
           </Card>
         </Col>
       </Row>
-      {/* NFL Games */}
+
       {nflGames.length > 0 && (
         <Row gutter={16}>
           <Col span={24}>
             <Card
               title={<span style={{ fontSize: '30px' }}>NFL Games</span>}
-              bordered={false}
+              bordered={true}
+              style={cardStyle}
             >
               <GameList games={nflGames} icon={solidIcons.faFootballBall} />
             </Card>
           </Col>
         </Row>
       )}
-      {/* NCAA Football Games */}
+
       {ncaaFootballGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
           <Col span={24}>
@@ -274,7 +296,8 @@ export default function HomePage() {
               title={
                 <span style={{ fontSize: '30px' }}>NCAA Football Games</span>
               }
-              bordered={false}
+              bordered={true}
+              style={cardStyle}
             >
               <GameList
                 games={ncaaFootballGames}
@@ -284,20 +307,21 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-      {/* NBA Games */}
+
       {nbaGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
           <Col span={24}>
             <Card
               title={<span style={{ fontSize: '30px' }}>NBA Games</span>}
-              bordered={false}
+              bordered={true}
+              style={cardStyle}
             >
               <GameList games={nbaGames} icon={solidIcons.faBasketballBall} />
             </Card>
           </Col>
         </Row>
       )}
-      {/* NCAA Basketball Games */}
+
       {ncaaBasketballGames.length > 0 && (
         <Row gutter={16} style={{ marginTop: '20px' }}>
           <Col span={24}>
@@ -305,7 +329,8 @@ export default function HomePage() {
               title={
                 <span style={{ fontSize: '30px' }}>NCAA Basketball Games</span>
               }
-              bordered={false}
+              bordered={true}
+              style={cardStyle}
             >
               <GameList
                 games={ncaaBasketballGames}
@@ -315,12 +340,13 @@ export default function HomePage() {
           </Col>
         </Row>
       )}
-      {/* User Profile Section */}
+
       <Row gutter={16} style={{ marginTop: '75px' }}>
         <Col span={24}>
           <Card
             title={<span style={{ fontSize: '30px' }}>my profile</span>}
-            bordered={false}
+            bordered={true}
+            style={cardStyle}
           >
             <List.Item.Meta
               avatar={<Avatar icon={<UserOutlined />} src={user?.pictureUrl} />}

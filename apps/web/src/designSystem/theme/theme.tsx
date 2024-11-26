@@ -15,7 +15,7 @@ export const Theme = {
     colorWarning: '#faad14',
     colorTextBase: '#FFFFFF', // white main text color
     colorLink: '#FFFFFF', // white hyperlink text color
-    colorBgBase: '#0e0e10', //
+    colorBgBase: '#3a4652', // dim gray background
     colorBgContainer: '#3A5241', // green table color is 81A18B
 
     // Typography
@@ -41,18 +41,18 @@ export const Theme = {
       itemMarginBottom: '22px',
     },
     Layout: {
-      headerBg: '#1f1f23', // light green
-      footerBg: '#1f1f23', // light green
-      bodyBg: '#000000', // dark green (v1 green is 628A6E)
-      siderBg: '#18181b', // Updated to match the dark sidebar background
+      headerBg: '#3A5241', // header background color
+      footerBg: '#3A5241', // footer background color
+      bodyBg: '#3a4652', // dim gray background
+      siderBg: '#18181b', // sidebar background
     },
     Menu: {
       activeBarBorderWidth: 0,
       itemHeight: 30,
       itemBg: 'transparent',
-      itemColor: '#000000', // Updated to match the light grey text
-      itemHoverBg: '#1f1f23', // Updated to match the hover background color
-      itemSelectedBg: '#1f1f23', // Updated to match the selected background color
+      itemColor: '#FFFFFF', // Updated to white text
+      itemHoverBg: '#1f1f23', // hover background color
+      itemSelectedBg: '#1f1f23', // selected background color
       itemSelectedColor: 'white',
       itemActiveBg: 'transparent',
     },

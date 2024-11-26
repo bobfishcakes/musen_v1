@@ -86,14 +86,21 @@ export default function EventStreamersPage() {
         margin: '0 auto',
       }}
     >
-      <Title level={2} style={{ fontSize: '45px' }}>
-        {' '}
-        {gameInfo
-          ? `${gameInfo.awayTeam} @ ${gameInfo.homeTeam}`
-          : 'Loading...'}{' '}
-        - who's live?
-      </Title>
-      <Card style={{ backgroundColor: '#81A18B' }} bordered={false}>
+      <Card
+        style={{ backgroundColor: '#3A5241', marginBottom: '20px' }}
+        bordered={false}
+      >
+        <Title
+          level={2}
+          style={{ fontSize: '45px', margin: 0, color: 'white' }}
+        >
+          {gameInfo
+            ? `${gameInfo.awayTeam} @ ${gameInfo.homeTeam}`
+            : 'Loading...'}{' '}
+          - who's live?
+        </Title>
+      </Card>
+      <Card style={{ backgroundColor: '#3A5241' }} bordered={false}>
         <List
           itemLayout="horizontal"
           dataSource={streams.length > 0 ? streams : dummyStreamers}
@@ -104,7 +111,9 @@ export default function EventStreamersPage() {
                   type="primary"
                   onClick={() => handleListenNow(item)}
                   style={{
-                    color: 'black',
+                    backgroundColor: '#3A5241',
+                    borderColor: '#3A5241',
+                    color: 'white',
                     fontWeight: 'bold',
                     fontSize: '25px',
                     padding: '12px 24px',
@@ -124,10 +133,18 @@ export default function EventStreamersPage() {
                 }
                 description={
                   <div style={{ fontSize: '20px' }}>
-                    <Text>{item.description || 'N/A'}</Text>
+                    <Text style={{ color: '#BAE0C0' }}>
+                      {item.description || 'N/A'}
+                    </Text>
                     <br />
                     <br />
-                    <Text style={{ fontSize: '18px', fontStyle: 'italic' }}>
+                    <Text
+                      style={{
+                        fontSize: '18px',
+                        fontStyle: 'italic',
+                        color: '#BAE0C0',
+                      }}
+                    >
                       Listeners: {item.listeners || 'N/A'}
                     </Text>
                   </div>
