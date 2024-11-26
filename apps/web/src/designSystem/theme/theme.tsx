@@ -8,7 +8,7 @@ export const Theme = {
   token: {
     // Colors
     colorPrimary: '#3A5241', // dark green ribbon text color
-    colorPrimaryBg: 'black', // unknown
+    colorPrimaryBg: '#e9eae0', // unknown
     colorError: '#ff4d4f',
     colorInfo: '#1677ff',
     colorSuccess: '#52c41a',

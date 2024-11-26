@@ -170,7 +170,7 @@ export default function HomePage() {
   const cardStyle = {
     border: '1px solid white',
     opacity: 1.0,
-    backgroundColor: '#3A5241',
+    backgroundColor: '#40826d',
     backgroundImage: `
       radial-gradient(farthest-side at -33.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 0 70px,
       radial-gradient(farthest-side at 50% 133.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 70px 0,
