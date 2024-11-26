@@ -15,7 +15,7 @@ export const Theme = {
     colorWarning: '#faad14',
     colorTextBase: '#FFFFFF', // white main text color
     colorLink: '#FFFFFF', // white hyperlink text color
-    colorBgBase: '#111913', // dim gray background
+    colorBgBase: '#e9eae0', // dim gray background
     colorBgContainer: '#0c100d', // green table color is 81A18B
 
     // Typography
