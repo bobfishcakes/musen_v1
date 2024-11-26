@@ -15,8 +15,8 @@ export const Theme = {
     colorWarning: '#faad14',
     colorTextBase: '#FFFFFF', // white main text color
     colorLink: '#FFFFFF', // white hyperlink text color
-    colorBgBase: '#3a4652', // dim gray background
-    colorBgContainer: '#3A5241', // green table color is 81A18B
+    colorBgBase: '#111913', // dim gray background
+    colorBgContainer: '#0c100d', // green table color is 81A18B
 
     // Typography
     fontFamily: `${amaranthFont.style.fontFamily}, -apple-system, 'Inconsolate'`,
@@ -43,7 +43,7 @@ export const Theme = {
     Layout: {
       headerBg: '#3A5241', // header background color
       footerBg: '#3A5241', // footer background color
-      bodyBg: '#3a4652', // dim gray background
+      bodyBg: '#0c100d', // dim gray background
       siderBg: '#18181b', // sidebar background
     },
     Menu: {
