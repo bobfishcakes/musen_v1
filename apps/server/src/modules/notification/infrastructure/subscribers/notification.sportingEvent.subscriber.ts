@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { OnEvent } from '@nestjs/event-emitter'
 import { SocketService } from '@server/libraries/socket'
-import { SportingEventApplicationEvent } from '@server/modules/sportingEvent/application'
 import { AuthorizationDomainFacade } from '@server/modules/authorization/domain'
 import {
   Notification,
   NotificationDomainFacade,
 } from '@server/modules/notification/domain'
+import {
+  SportingEventApplicationEvent,
+  SportingEventCreatedPayload
+} from '@server/modules/sportingEvent/application'
 
 @Injectable()
 export class NotificationSportingEventSubscriber {
@@ -17,9 +20,7 @@ export class NotificationSportingEventSubscriber {
   ) {}
 
   @OnEvent(SportingEventApplicationEvent.SportingEventCreated.key)
-  async handleCreation(
-    data: SportingEventApplicationEvent.SportingEventCreated.Payload,
-  ) {
+  async handleCreation(data: SportingEventCreatedPayload) {
     const values: Partial<Notification> = {
       title: 'Admin',
       message: 'A new sportingEvent has been created',

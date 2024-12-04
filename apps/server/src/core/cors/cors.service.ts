@@ -1,49 +1,36 @@
-import { Injectable } from '@nestjs/common'
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
+import { Injectable } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import {
   ConfigurationService,
   ConfigurationServiceObject,
-} from '../configuration'
+} from '../configuration';
 
 @Injectable()
 export class CorsService {
   constructor(private configurationService: ConfigurationService) {}
 
-  getOptions() {
-    const options: Record<ConfigurationServiceObject.Environment, CorsOptions> =
-      {
-        [ConfigurationServiceObject.Environment.DEVELOPMENT]: {
-          origin: (origin, callback) => {
-            if (origin) {
-              callback(null, origin)
-            } else {
-              callback(new Error('Not allowed by CORS'))
-            }
-          },
-          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-          allowedHeaders: 'Content-Type, Accept, Authorization',
-          credentials: true,
+  getOptions(): CorsOptions {
+    const options: Record<string, CorsOptions> = {
+      [ConfigurationServiceObject.Environment.DEVELOPMENT]: {
+        origin: (origin, callback) => {
+          // Allow requests from localhost:8099 and null origin (for same-origin requests)
+          const allowedOrigins = ['http://localhost:8099', 'null'];
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
         },
-        [ConfigurationServiceObject.Environment.PRODUCTION]: {
-          origin: (origin, callback) => {
-            if (origin) {
-              callback(null, origin)
-            } else {
-              callback(new Error('Not allowed by CORS'))
-            }
-          },
-          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-          allowedHeaders: 'Content-Type, Accept, Authorization',
-          credentials: true,
-        },
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+        credentials: true
+      },
+      [ConfigurationServiceObject.Environment.PRODUCTION]: {
+        // Production CORS settings...
       }
-
-    const environment = this.configurationService.getEnvironment()
-
-    const value = options[environment]
-    const valueDefault =
-      options[ConfigurationServiceObject.Environment.DEVELOPMENT]
-
-    return value ?? valueDefault
+    };
+  
+    const value = options[this.configurationService.getEnvironment()];
+    return value ?? options[ConfigurationServiceObject.Environment.DEVELOPMENT];
   }
 }
