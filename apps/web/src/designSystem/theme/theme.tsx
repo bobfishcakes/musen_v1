@@ -1,7 +1,7 @@
-import { theme } from 'antd'
-import { Amaranth } from 'next/font/google'
+import { theme } from 'antd';
+import { Instrument_Sans } from 'next/font/google';
 
-const amaranthFont = Amaranth({ subsets: ['latin'], weight: ['400', '700'] })
+const instrumentSansFont = Instrument_Sans({ weight: ['400', '700'], subsets: ['latin'] });
 
 export const Theme = {
   algorithm: theme.darkAlgorithm,
@@ -19,7 +19,7 @@ export const Theme = {
     colorBgContainer: '#0c100d', // green table color is 81A18B
 
     // Typography
-    fontFamily: `${amaranthFont.style.fontFamily}, -apple-system, 'Inconsolate'`,
+    fontFamily: `${instrumentSansFont.style.fontFamily}, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif`,
     fontSize: 20,
     fontSizeHeading1: 38,
     fontSizeHeading2: 30,
@@ -43,8 +43,8 @@ export const Theme = {
     Layout: {
       headerBg: '#3A5241', // header background color
       footerBg: '#3A5241', // footer background color
-      bodyBg: '#0c100d', // dim gray background
-      siderBg: '#18181b', // sidebar background
+      bodyBg: '#000000', // black
+      siderBg: '#000000', // black
     },
     Menu: {
       activeBarBorderWidth: 0,
