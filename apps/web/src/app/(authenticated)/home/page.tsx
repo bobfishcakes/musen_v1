@@ -168,9 +168,8 @@ export default function HomePage() {
   }
 
   const cardStyle = {
-    border: '1px solid white',
     opacity: 1.0,
-    backgroundColor: '#40826d',
+    backgroundColor: '#222222',
     backgroundImage: `
       radial-gradient(farthest-side at -33.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 0 70px,
       radial-gradient(farthest-side at 50% 133.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 70px 0,
@@ -234,15 +233,18 @@ export default function HomePage() {
         <Col xs={24} sm={24} md={20} lg={18}>
           <Card
             bordered={false}
-            style={{ ...cardStyle, width: '800px', padding: '10px 20px' }}
+            style={{ ...cardStyle, width: '800px', backgroundColor: '#000000', }}
           >
-            <Row justify="center">
-              <Col span={24} style={{ textAlign: 'center' }}>
+            <Row>
+              <Col span={18} style={{ textAlign: 'center' }}>
                 <Title
-                  level={2}
+                  level={1}
                   style={{
-                    fontSize: '125px',
+                    fontSize: '100px',
+                    fontWeight: 'bold',
+                    marginTop: '10px', // Reduced top margin
                     marginBottom: '10px', // Reduced bottom margin
+                    color: 'white',
                   }}
                 >
                   musen
@@ -250,7 +252,7 @@ export default function HomePage() {
                 <Title
                   level={2}
                   style={{
-                    fontSize: '35px',
+                    fontSize: '30px',
                     fontWeight: 'normal',
                     marginTop: '10px', // Reduced top margin
                     marginBottom: '10px', // Reduced bottom margin
@@ -259,14 +261,18 @@ export default function HomePage() {
                 >
                   sports commentary how you want it
                 </Title>
+              </Col>
+              <Col span={6}>
                 <img
                   src="/musen_logo.png"
-                  width={180} // Reduced from 240
-                  height={180} // Reduced from 240
+                  width={250}
+                  height={250}
                   style={{
                     borderRadius: '10px',
-                    marginTop: '10px', // Reduced top margin
-                    marginBottom: '10px', // Added bottom margin
+                    marginTop: '-50px',
+                    marginBottom: '10px',
+                    marginLeft: '10px',
+                    marginRight: '10px',
                   }}
                 />
               </Col>
