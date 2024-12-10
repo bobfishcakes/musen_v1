@@ -15,39 +15,11 @@ import utc from 'dayjs/plugin/utc'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+import { Game } from './interfaces'
+import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames } from './mockData'
 
-interface Team {
-  name: string
-  id: string
-}
-
-interface Teams {
-  home: Team
-  away: Team
-}
-
-interface League {
-  name: string
-  alias?: string
-}
-
-interface GameDate {
-  date: string
-  time: string
-}
-
-interface Game {
-  id: string
-  teams: Teams
-  league: League
-  date?: string
-  game?: {
-    date: GameDate
-    status: {
-      short: string
-    }
-  }
-}
+const USE_MOCK_DATA = true; // Developer toggle: Set to false to use real API calls
+// This is temporary until we have environment variables set up to do this automatically
 
 interface ApiResponse {
   response: Game[]
@@ -70,7 +42,14 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    const fetchFootballGames = async () => {
+    const fetchGames = async () => {
+      if (USE_MOCK_DATA) {
+        setNcaaFootballGames(mockNcaaFootballGames);
+        setNbaGames(mockNbaGames);
+        setNcaaBasketballGames(mockNcaaBasketballGames);
+        return;
+      }
+
       try {
         const date = new Date()
         const today = date.toLocaleDateString('en-US', {
@@ -147,7 +126,7 @@ export default function HomePage() {
       }
     }
 
-    fetchFootballGames()
+    fetchGames()
     fetchBasketballGames()
     fetchUserProfile()
   }, [userId, enqueueSnackbar])
@@ -169,18 +148,13 @@ export default function HomePage() {
 
   const cardStyle = {
     opacity: 1.0,
-    backgroundColor: '#222222',
-    backgroundImage: `
-      radial-gradient(farthest-side at -33.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 0 70px,
-      radial-gradient(farthest-side at 50% 133.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%) 70px 0,
-      radial-gradient(farthest-side at 133.33% 50%, transparent 52%, #2A3F30 54% 57%, transparent 59%),
-      radial-gradient(farthest-side at 50% -33.33%, transparent 52%, #2A3F30 54% 57%, transparent 59%)
-    `,
-    backgroundSize: 'calc(140px/4.667) 140px, 140px calc(140px/4.667)',
-    backgroundRepeat: 'repeat',
-    backgroundPosition: '0 0',
-    marginBottom: '20px', // Add spacing between cards
-  }
+    backgroundColor: '#1e1e1e',
+    backgroundSize: '100px 100px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    padding: '20px',
+    color: '#ffffff',
+  };
 
   const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
     <List
@@ -193,7 +167,7 @@ export default function HomePage() {
               <FontAwesomeIcon icon={icon} style={{ color: '#FFFFFF' }} />
             }
             title={
-              <span style={{ fontSize: '22px' }}>
+              <span style={{ fontSize: '18px' }}>
                 {game.teams.away.name} @ {game.teams.home.name}
               </span>
             }
@@ -216,11 +190,11 @@ export default function HomePage() {
             style={{
               backgroundColor: '#3A5241',
               borderColor: '#3A5241',
+              borderRadius: '50px',
+              paddingBottom: '5px',
             }}
           >
-            <span style={{ fontSize: '20px', color: '#FFFFFF' }}>
-              listen now
-            </span>
+              <FontAwesomeIcon icon={solidIcons.faVolumeUp} />
           </Button>
         </List.Item>
       )}
@@ -285,8 +259,7 @@ export default function HomePage() {
         <Row gutter={16}>
           <Col span={24}>
             <Card
-              title={<span style={{ fontSize: '30px' }}>NFL Games</span>}
-              bordered={true}
+              title={<span style={{ fontSize: '25px' }}>NFL Games</span>}
               style={cardStyle}
             >
               <GameList games={nflGames} icon={solidIcons.faFootballBall} />
@@ -300,9 +273,8 @@ export default function HomePage() {
           <Col span={24}>
             <Card
               title={
-                <span style={{ fontSize: '30px' }}>NCAA Football Games</span>
+                <span style={{ fontSize: '25px' }}>NCAA Football Games</span>
               }
-              bordered={true}
               style={cardStyle}
             >
               <GameList
@@ -318,8 +290,7 @@ export default function HomePage() {
         <Row gutter={16} style={{ marginTop: '20px' }}>
           <Col span={24}>
             <Card
-              title={<span style={{ fontSize: '30px' }}>NBA Games</span>}
-              bordered={true}
+              title={<span style={{ fontSize: '25px' }}>NBA Games</span>}
               style={cardStyle}
             >
               <GameList games={nbaGames} icon={solidIcons.faBasketballBall} />
@@ -333,7 +304,7 @@ export default function HomePage() {
           <Col span={24}>
             <Card
               title={
-                <span style={{ fontSize: '30px' }}>NCAA Basketball Games</span>
+                <span style={{ fontSize: '25px' }}>NCAA Basketball Games</span>
               }
               bordered={true}
               style={cardStyle}
@@ -350,7 +321,7 @@ export default function HomePage() {
       <Row gutter={16} style={{ marginTop: '75px' }}>
         <Col span={24}>
           <Card
-            title={<span style={{ fontSize: '30px' }}>my profile</span>}
+            title={<span style={{ fontSize: '25px' }}>my profile</span>}
             bordered={true}
             style={cardStyle}
           >
