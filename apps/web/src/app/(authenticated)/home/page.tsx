@@ -16,10 +16,9 @@ import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 import { Game } from './interfaces'
-import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames } from './mockData'
+import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames, mockNflGames } from './mockData'
 
-const USE_MOCK_DATA = true; // Developer toggle: Set to false to use real API calls
-// This is temporary until we have environment variables set up to do this automatically
+const USE_MOCK_DATA = false; // Developer toggle: Set to false to use real API calls
 
 interface ApiResponse {
   response: Game[]
@@ -42,11 +41,10 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    const fetchGames = async () => {
+    const fetchFootballGames = async () => {
       if (USE_MOCK_DATA) {
         setNcaaFootballGames(mockNcaaFootballGames);
-        setNbaGames(mockNbaGames);
-        setNcaaBasketballGames(mockNcaaBasketballGames);
+        setNflGames(mockNflGames);
         return;
       }
 
@@ -82,6 +80,12 @@ export default function HomePage() {
     }
 
     const fetchBasketballGames = async () => {
+      if (USE_MOCK_DATA) {
+        setNcaaBasketballGames(mockNcaaBasketballGames);
+        setNbaGames(mockNbaGames);
+        return;
+      }
+
       try {
         const date = new Date()
         const today = date.toLocaleDateString('en-US', {
@@ -126,7 +130,7 @@ export default function HomePage() {
       }
     }
 
-    fetchGames()
+    fetchFootballGames()
     fetchBasketballGames()
     fetchUserProfile()
   }, [userId, enqueueSnackbar])

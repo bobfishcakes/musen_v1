@@ -56,6 +56,63 @@ export const mockNcaaFootballGames: Game[] = [
       }
     }
   ];
+
+export const mockNflGames: Game[] = [
+    {
+      id: "nflGame1",
+      teams: {
+        home: {
+          name: "NFL Team A",
+          id: "nflTeamA"
+        },
+        away: {
+          name: "NFL Team B",
+          id: "nflTeamB"
+        }
+      },
+      league: {
+        name: "NFL",
+        alias: "NFL"
+      },
+      date: "2023-10-03",
+      game: {
+        date: {
+          date: "2023-10-03",
+          time: "13:00"
+        },
+        status: {
+          short: "Scheduled"
+        }
+      }
+    },
+    {
+      id: "nflGame2",
+      teams: {
+        home: {
+          name: "NFL Team C",
+          id: "nflTeamC"
+        },
+        away: {
+          name: "NFL Team D",
+          id: "nflTeamD"
+        }
+      },
+      league: {
+        name: "NFL",
+        alias: "NFL"
+      },
+      date: "2023-10-04",
+      game: {
+        date: {
+          date: "2023-10-04",
+          time: "16:00"
+        },
+        status: {
+          short: "Scheduled"
+        }
+      }
+    }
+  ];
   
 export const mockNbaGames: Game[] = [
     {
