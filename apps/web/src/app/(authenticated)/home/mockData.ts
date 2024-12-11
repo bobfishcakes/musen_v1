@@ -42,15 +42,15 @@ export const mockNcaaFootballGames: Game[] = [
       date: {
         date: "2023-10-03",
         time: "20:00"
-      },
-      status: {
-        short: "HT",
-        long: statusMap.HT
-      },
-      scores: {
-        home: { total: 14 },
-        away: { total: 0 }
       }
+    },
+    status: {
+      short: "HT",
+      long: statusMap.HT
+    },
+    scores: {
+      home: { total: 14 },
+      away: { total: 0 }
     }
   },
 ];
@@ -79,15 +79,15 @@ export const mockNflGames: Game[] = [
       date: {
         date: "2023-10-03",
         time: "13:00"
-      },
-      status: {
-        short: "Q2",
-        long: statusMap.Q2
-      },
-      scores: {
-        home: { total: 24 },
-        away: { total: 27 }
       }
+    },
+    status: {
+      short: "Q2",
+      long: statusMap.Q2
+    },
+    scores: {
+      home: { total: 24 },
+      away: { total: 27 }
     }
   },
   {
@@ -113,15 +113,15 @@ export const mockNflGames: Game[] = [
       date: {
         date: "2023-10-04",
         time: "14:00"
-      },
-      status: {
-        short: "Q1",
-        long: statusMap.Q1
-      },
-      scores: {
-        home: { total: 17 },
-        away: { total: 21 }
       }
+    },
+    status: {
+      short: "Q1",
+      long: statusMap.Q1
+    },
+    scores: {
+      home: { total: 17 },
+      away: { total: 21 }
     }
   },
   {
@@ -147,15 +147,15 @@ export const mockNflGames: Game[] = [
       date: {
         date: "2023-10-05",
         time: "15:00"
-      },
-      status: {
-        short: "Q3",
-        long: statusMap.Q3
-      },
-      scores: {
-        home: { total: 14 },
-        away: { total: 28 }
       }
+    },
+    status: {
+      short: "Q3",
+      long: statusMap.Q3
+    },
+    scores: {
+      home: { total: 14 },
+      away: { total: 28 }
     }
   },
   {
@@ -181,15 +181,15 @@ export const mockNflGames: Game[] = [
       date: {
         date: "2023-10-06",
         time: "16:00"
-      },
-      status: {
-        short: "Q4",
-        long: statusMap.Q4
-      },
-      scores: {
-        home: { total: 31 },
-        away: { total: 24 }
       }
+    },
+    status: {
+      short: "Q4",
+      long: statusMap.Q4
+    },
+    scores: {
+      home: { total: 31 },
+      away: { total: 24 }
     }
   },
   {
@@ -215,15 +215,15 @@ export const mockNflGames: Game[] = [
       date: {
         date: "2023-10-07",
         time: "17:00"
-      },
-      status: {
-        short: "FT",
-        long: statusMap.FT
-      },
-      scores: {
-        home: { total: 20 },
-        away: { total: 23 }
       }
+    },
+    status: {
+      short: "FT",
+      long: statusMap.FT
+    },
+    scores: {
+      home: { total: 20 },
+      away: { total: 23 }
     }
   }
 ];
@@ -252,15 +252,15 @@ export const mockNbaGames: Game[] = [
       date: {
         date: "2023-10-01",
         time: "19:00"
-      },
-      status: {
-        short: "NS",
-        long: statusMap.NS
-      },
-      scores: {
-        home: { total: 0 },
-        away: { total: 0 }
       }
+    },
+    status: {
+      short: "NS",
+      long: statusMap.NS
+    },
+    scores: {
+      home: { total: 0 },
+      away: { total: 0 }
     }
   },
   {
@@ -286,15 +286,15 @@ export const mockNbaGames: Game[] = [
       date: {
         date: "2023-10-02",
         time: "20:00"
-      },
-      status: {
-        short: "NS",
-        long: statusMap.NS
-      },
-      scores: {
-        home: { total: 0 },
-        away: { total: 0 }
       }
+    },
+    status: {
+      short: "NS",
+      long: statusMap.NS
+    },
+    scores: {
+      home: { total: 0 },
+      away: { total: 0 }
     }
   },
   {
@@ -320,15 +320,15 @@ export const mockNbaGames: Game[] = [
       date: {
         date: "2023-10-03",
         time: "21:00"
-      },
-      status: {
-        short: "FT",
-        long: statusMap.FT
-      },
-      scores: {
-        home: { total: 95 },
-        away: { total: 99 }
       }
+    },
+    status: {
+      short: "FT",
+      long: statusMap.FT
+    },
+    scores: {
+      home: { total: 95 },
+      away: { total: 99 }
     }
   }
 ];
@@ -357,15 +357,15 @@ export const mockNcaaBasketballGames: Game[] = [
       date: {
         date: "2023-10-02",
         time: "19:00"
-      },
-      status: {
-        short: "Q1",
-        long: statusMap.Q1
-      },
-      scores: {
-        home: { total: 82 },
-        away: { total: 79 }
       }
+    },
+    status: {
+      short: "Q1",
+      long: statusMap.Q1
+    },
+    scores: {
+      home: { total: 82 },
+      away: { total: 79 }
     }
   },
   {
@@ -391,15 +391,15 @@ export const mockNcaaBasketballGames: Game[] = [
       date: {
         date: "2023-10-03",
         time: "20:00"
-      },
-      status: {
-        short: "Q1",
-        long: statusMap.Q1
-      },
-      scores: {
-        home: { total: 88 },
-        away: { total: 85 }
       }
+    },
+    status: {
+      short: "Q1",
+      long: statusMap.Q1
+    },
+    scores: {
+      home: { total: 88 },
+      away: { total: 85 }
     }
   }
 ];

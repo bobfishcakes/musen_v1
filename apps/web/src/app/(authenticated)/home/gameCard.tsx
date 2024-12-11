@@ -74,7 +74,6 @@ const Description = styled.div`
 `;
 
 const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
-    const hasStarted = game.game.status.short !== 'NS';
   return (
     <StyledCard onClick={() => onNavigate(game.id, game)}>
       <ContentContainer>
@@ -82,7 +81,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
           {game.teams.away.name} @ {game.teams.home.name}
         </Title>
         <Description>
-        {game.game.status.short === 'NS' ? (
+        {game.status?.short === 'NS' ? (
   game.date
     ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
     : game.game?.date
@@ -91,17 +90,17 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
           .format('h:mm A [CT]')
       : 'Time TBD'
 ) : (
-  <div>{game.game?.status.long}</div>
+  <div>{game.status.long}</div>
 )}
         </Description>
       </ContentContainer>
       <ScoreContainer>
         <TeamScore>
           <Logo src={game.teams.away.logo} alt={game.teams.away.name} />
-          <Score>{game.game?.scores?.away.total || 0 }</Score>
+          <Score>{game.scores?.away.total || 0 }</Score>
         </TeamScore>
         <TeamScore>
-          <Score>{game.game?.scores?.home.total|| 0}</Score>
+          <Score>{game.scores?.home.total|| 0}</Score>
           <Logo src={game.teams.home.logo} alt={game.teams.home.name} />
         </TeamScore>
       </ScoreContainer>
