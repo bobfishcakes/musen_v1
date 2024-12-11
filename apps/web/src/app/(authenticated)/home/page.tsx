@@ -17,8 +17,9 @@ import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 import { Game } from './interfaces'
 import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames, mockNflGames } from './mockData'
+import MusenTitle from './musenTitle'
 
-const USE_MOCK_DATA = false; // Developer toggle: Set to false to use real API calls
+const USE_MOCK_DATA = true; // Developer toggle: Set to false to use real API calls
 
 interface ApiResponse {
   response: Game[]
@@ -158,6 +159,8 @@ export default function HomePage() {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     padding: '20px',
     color: '#ffffff',
+    marginBottom: '20px',
+    borderWidth: '0px',
   };
 
   const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
@@ -207,58 +210,7 @@ export default function HomePage() {
 
   return (
     <PageLayout layout="narrow">
-      <Row justify="center" style={{ marginTop: '20px', marginBottom: '40px' }}>
-        <Col xs={24} sm={24} md={20} lg={18}>
-          <Card
-            bordered={false}
-            style={{ ...cardStyle, width: '800px', backgroundColor: '#000000', }}
-          >
-            <Row>
-              <Col span={18} style={{ textAlign: 'center' }}>
-                <Title
-                  level={1}
-                  style={{
-                    fontSize: '100px',
-                    fontWeight: 'bold',
-                    marginTop: '10px', // Reduced top margin
-                    marginBottom: '10px', // Reduced bottom margin
-                    color: 'white',
-                  }}
-                >
-                  musen
-                </Title>
-                <Title
-                  level={2}
-                  style={{
-                    fontSize: '30px',
-                    fontWeight: 'normal',
-                    marginTop: '10px', // Reduced top margin
-                    marginBottom: '10px', // Reduced bottom margin
-                    color: '#BAE0C0',
-                  }}
-                >
-                  sports commentary how you want it
-                </Title>
-              </Col>
-              <Col span={6}>
-                <img
-                  src="/musen_logo.png"
-                  width={250}
-                  height={250}
-                  style={{
-                    borderRadius: '10px',
-                    marginTop: '-50px',
-                    marginBottom: '10px',
-                    marginLeft: '10px',
-                    marginRight: '10px',
-                  }}
-                />
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-
+      <MusenTitle></MusenTitle>
       {nflGames.length > 0 && (
         <Row gutter={16}>
           <Col span={24}>

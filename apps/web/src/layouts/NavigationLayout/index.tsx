@@ -5,9 +5,9 @@ import { useAuthentication } from '@web/modules/authentication'
 import { Col, Layout, Row } from 'antd'
 import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
+import { BottomBar } from './components/BottomBar'
 import { Leftbar } from './components/Leftbar'
 import { Logo } from './components/Logo'
-import { SubNavigation } from './components/SubNavigation'
 import { Topbar } from './components/Topbar/index.layout'
 
 interface Props {
@@ -43,13 +43,13 @@ export const NavigationLayout: React.FC<Props> = ({ children }) => {
 
     {
       key: '/streamer/dashboard',
-      label: 'Streamer Dashboard',
+      label: 'Dashboard',
       onClick: () => goTo('/streamer/dashboard'),
     },
 
     {
       key: '/streamer/dashboard/live',
-      label: 'Streamer Live Feed',
+      label: 'Live Feed',
       onClick: () => goTo('/streamer/dashboard/live'),
     },
   ]
@@ -150,9 +150,8 @@ export const NavigationLayout: React.FC<Props> = ({ children }) => {
                 alignItems: 'center',
               }}
             >
-              <SubNavigation items={itemsSubNavigation} />
-
               {children}
+            <BottomBar style={{ marginTop: 'auto', width: '100%' }} />
             </Col>
           </Col>
         </Row>
