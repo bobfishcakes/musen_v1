@@ -1,229 +1,405 @@
 import { Game } from './interfaces';
 
+const statusMap = {
+  NS: "Not Started",
+  Q1: "1st Quarter",
+  Q2: "2nd Quarter",
+  Q3: "3rd Quarter",
+  Q4: "4th Quarter",
+  OT: "Overtime",
+  BT: "Break",
+  HT: "Halftime",
+  FT: "Final",
+  AOT: "After Over Time",
+  POST: "Game Postponed",
+  CANC: "Game Cancelled",
+  SUSP: "Game Suspended",
+  AWD: "Game Awarded",
+  ABD: "Game Abandoned"
+};
+
 export const mockNcaaFootballGames: Game[] = [
-    {
-      id: "ncaaFootballGame1",
-      teams: {
-        home: {
-          name: "College Team A",
-          id: "collegeTeamA"
-        },
-        away: {
-          name: "College Team B",
-          id: "collegeTeamB"
-        }
+  {
+    id: "195",
+    teams: {
+      home: {
+        name: "Texas",
+        id: "195",
+        logo: "https://media.api-sports.io/american-football/teams/195.png",
       },
-      league: {
-        name: "NCAA Football",
-        alias: "NCAAF"
-      },
-      date: "2023-10-01",
-      game: {
-        date: {
-          date: "2023-10-01",
-          time: "12:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      away: {
+        name: "Texas A&M",
+        id: "111",
+        logo: "https://media.api-sports.io/american-football/teams/111.png",
       }
     },
-    {
-      id: "ncaaFootballGame2",
-      teams: {
-        home: {
-          name: "College Team C",
-          id: "collegeTeamC"
-        },
-        away: {
-          name: "College Team D",
-          id: "collegeTeamD"
-        }
+    league: {
+      name: "NCAA Football",
+      alias: "NCAAF"
+    },
+    date: "2023-10-03",
+    game: {
+      date: {
+        date: "2023-10-03",
+        time: "20:00"
       },
-      league: {
-        name: "NCAA Football",
-        alias: "NCAAF"
+      status: {
+        short: "HT",
+        long: statusMap.HT
       },
-      date: "2023-10-02",
-      game: {
-        date: {
-          date: "2023-10-02",
-          time: "15:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      scores: {
+        home: { total: 14 },
+        away: { total: 0 }
       }
     }
-  ];
+  },
+];
 
 export const mockNflGames: Game[] = [
-    {
-      id: "nflGame1",
-      teams: {
-        home: {
-          name: "NFL Team A",
-          id: "nflTeamA"
-        },
-        away: {
-          name: "NFL Team B",
-          id: "nflTeamB"
-        }
+  {
+    id: "1",
+    teams: {
+      home: {
+        name: "Las Vegas Raiders",
+        id: "1",
+        logo: "https://media.api-sports.io/american-football/teams/1.png",
       },
-      league: {
-        name: "NFL",
-        alias: "NFL"
-      },
-      date: "2023-10-03",
-      game: {
-        date: {
-          date: "2023-10-03",
-          time: "13:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      away: {
+        name: "Baltimore Ravens",
+        id: "5",
+        logo: "https://media.api-sports.io/american-football/teams/5.png",
       }
     },
-    {
-      id: "nflGame2",
-      teams: {
-        home: {
-          name: "NFL Team C",
-          id: "nflTeamC"
-        },
-        away: {
-          name: "NFL Team D",
-          id: "nflTeamD"
-        }
+    league: {
+      name: "NFL",
+      alias: "NFL"
+    },
+    date: "2023-10-03",
+    game: {
+      date: {
+        date: "2023-10-03",
+        time: "13:00"
       },
-      league: {
-        name: "NFL",
-        alias: "NFL"
+      status: {
+        short: "Q2",
+        long: statusMap.Q2
       },
-      date: "2023-10-04",
-      game: {
-        date: {
-          date: "2023-10-04",
-          time: "16:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      scores: {
+        home: { total: 24 },
+        away: { total: 27 }
       }
     }
-  ];
-  
+  },
+  {
+    id: "2",
+    teams: {
+      home: {
+        name: "Jacksonville Jaguars",
+        id: "2",
+        logo: "https://media.api-sports.io/american-football/teams/2.png",
+      },
+      away: {
+        name: "New England Patriots",
+        id: "3",
+        logo: "https://media.api-sports.io/american-football/teams/3.png",
+      }
+    },
+    league: {
+      name: "NFL",
+      alias: "NFL"
+    },
+    date: "2023-10-04",
+    game: {
+      date: {
+        date: "2023-10-04",
+        time: "14:00"
+      },
+      status: {
+        short: "Q1",
+        long: statusMap.Q1
+      },
+      scores: {
+        home: { total: 17 },
+        away: { total: 21 }
+      }
+    }
+  },
+  {
+    id: "4",
+    teams: {
+      home: {
+        name: "New York Giants",
+        id: "4",
+        logo: "https://media.api-sports.io/american-football/teams/4.png",
+      },
+      away: {
+        name: "Tennessee Titans",
+        id: "6",
+        logo: "https://media.api-sports.io/american-football/teams/6.png",
+      }
+    },
+    league: {
+      name: "NFL",
+      alias: "NFL"
+    },
+    date: "2023-10-05",
+    game: {
+      date: {
+        date: "2023-10-05",
+        time: "15:00"
+      },
+      status: {
+        short: "Q3",
+        long: statusMap.Q3
+      },
+      scores: {
+        home: { total: 14 },
+        away: { total: 28 }
+      }
+    }
+  },
+  {
+    id: "7",
+    teams: {
+      home: {
+        name: "Detroit Lions",
+        id: "7",
+        logo: "https://media.api-sports.io/american-football/teams/7.png",
+      },
+      away: {
+        name: "Atlanta Falcons",
+        id: "8",
+        logo: "https://media.api-sports.io/american-football/teams/8.png",
+      }
+    },
+    league: {
+      name: "NFL",
+      alias: "NFL"
+    },
+    date: "2023-10-06",
+    game: {
+      date: {
+        date: "2023-10-06",
+        time: "16:00"
+      },
+      status: {
+        short: "Q4",
+        long: statusMap.Q4
+      },
+      scores: {
+        home: { total: 31 },
+        away: { total: 24 }
+      }
+    }
+  },
+  {
+    id: "9",
+    teams: {
+      home: {
+        name: "Cleveland Browns",
+        id: "9",
+        logo: "https://media.api-sports.io/american-football/teams/9.png",
+      },
+      away: {
+        name: "Cincinnati Bengals",
+        id: "10",
+        logo: "https://media.api-sports.io/american-football/teams/10.png",
+      }
+    },
+    league: {
+      name: "NFL",
+      alias: "NFL"
+    },
+    date: "2023-10-07",
+    game: {
+      date: {
+        date: "2023-10-07",
+        time: "17:00"
+      },
+      status: {
+        short: "FT",
+        long: statusMap.FT
+      },
+      scores: {
+        home: { total: 20 },
+        away: { total: 23 }
+      }
+    }
+  }
+];
+
 export const mockNbaGames: Game[] = [
-    {
-      id: "nbaGame1",
-      teams: {
-        home: {
-          name: "NBA Team A",
-          id: "nbaTeamA"
-        },
-        away: {
-          name: "NBA Team B",
-          id: "nbaTeamB"
-        }
+  {
+    id: "132",
+    teams: {
+      home: {
+        name: "Atlanta Hawks",
+        id: "132",
+        logo: "https://media.api-sports.io/basketball/teams/132.png",
       },
-      league: {
-        name: "NBA",
-        alias: "NBA"
-      },
-      date: "2023-10-03",
-      game: {
-        date: {
-          date: "2023-10-03",
-          time: "19:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      away: {
+        name: "Boston Celtics",
+        id: "133",
+        logo: "https://media.api-sports.io/basketball/teams/133.png",
       }
     },
-    {
-      id: "nbaGame2",
-      teams: {
-        home: {
-          name: "NBA Team C",
-          id: "nbaTeamC"
-        },
-        away: {
-          name: "NBA Team D",
-          id: "nbaTeamD"
-        }
+    league: {
+      name: "NBA",
+      alias: "NBA"
+    },
+    date: "2023-10-01",
+    game: {
+      date: {
+        date: "2023-10-01",
+        time: "19:00"
       },
-      league: {
-        name: "NBA",
-        alias: "NBA"
+      status: {
+        short: "NS",
+        long: statusMap.NS
       },
-      date: "2023-10-04",
-      game: {
-        date: {
-          date: "2023-10-04",
-          time: "21:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      scores: {
+        home: { total: 0 },
+        away: { total: 0 }
       }
     }
-  ];
-  
+  },
+  {
+    id: "134",
+    teams: {
+      home: {
+        name: "Brooklyn Nets",
+        id: "134",
+        logo: "https://media.api-sports.io/basketball/teams/134.png",
+      },
+      away: {
+        name: "Charlotte Hornets",
+        id: "135",
+        logo: "https://media.api-sports.io/basketball/teams/135.png",
+      }
+    },
+    league: {
+      name: "NBA",
+      alias: "NBA"
+    },
+    date: "2023-10-02",
+    game: {
+      date: {
+        date: "2023-10-02",
+        time: "20:00"
+      },
+      status: {
+        short: "NS",
+        long: statusMap.NS
+      },
+      scores: {
+        home: { total: 0 },
+        away: { total: 0 }
+      }
+    }
+  },
+  {
+    id: "136",
+    teams: {
+      home: {
+        name: "Chicago Bulls",
+        id: "136",
+        logo: "https://media.api-sports.io/basketball/teams/136.png",
+      },
+      away: {
+        name: "Cleveland Cavaliers",
+        id: "137",
+        logo: "https://media.api-sports.io/basketball/teams/137.png",
+      }
+    },
+    league: {
+      name: "NBA",
+      alias: "NBA"
+    },
+    date: "2023-10-03",
+    game: {
+      date: {
+        date: "2023-10-03",
+        time: "21:00"
+      },
+      status: {
+        short: "FT",
+        long: statusMap.FT
+      },
+      scores: {
+        home: { total: 95 },
+        away: { total: 99 }
+      }
+    }
+  }
+];
+
 export const mockNcaaBasketballGames: Game[] = [
-    {
-      id: "ncaaBasketballGame1",
-      teams: {
-        home: {
-          name: "College Basketball Team A",
-          id: "collegeBasketballTeamA"
-        },
-        away: {
-          name: "College Basketball Team B",
-          id: "collegeBasketballTeamB"
-        }
+  {
+    id: "196",
+    teams: {
+      home: {
+        name: "Norfolk State",
+        id: "196",
+        logo: "https://media.api-sports.io/basketball/teams/196.png",
       },
-      league: {
-        name: "NCAA Basketball",
-        alias: "NCAAB"
-      },
-      date: "2023-10-05",
-      game: {
-        date: {
-          date: "2023-10-05",
-          time: "18:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      away: {
+        name: "Wright State",
+        id: "206",
+        logo: "https://media.api-sports.io/basketball/teams/206.png",
       }
     },
-    {
-      id: "ncaaBasketballGame2",
-      teams: {
-        home: {
-          name: "College Basketball Team C",
-          id: "collegeBasketballTeamC"
-        },
-        away: {
-          name: "College Basketball Team D",
-          id: "collegeBasketballTeamD"
-        }
+    league: {
+      name: "NCAA Basketball",
+      alias: "NCAAB"
+    },
+    date: "2023-10-02",
+    game: {
+      date: {
+        date: "2023-10-02",
+        time: "19:00"
       },
-      league: {
-        name: "NCAA Basketball",
-        alias: "NCAAB"
+      status: {
+        short: "Q1",
+        long: statusMap.Q1
       },
-      date: "2023-10-06",
-      game: {
-        date: {
-          date: "2023-10-06",
-          time: "20:00"
-        },
-        status: {
-          short: "Scheduled"
-        }
+      scores: {
+        home: { total: 82 },
+        away: { total: 79 }
       }
     }
-  ];
+  },
+  {
+    id: "222",
+    teams: {
+      home: {
+        name: "Utah Valley State",
+        id: "222",
+        logo: "https://media.api-sports.io/basketball/teams/222.png",
+      },
+      away: {
+        name: "Kent State",
+        id: "235",
+        logo: "https://media.api-sports.io/basketball/teams/235.png",
+      }
+    },
+    league: {
+      name: "NCAA Basketball",
+      alias: "NCAAB"
+    },
+    date: "2023-10-03",
+    game: {
+      date: {
+        date: "2023-10-03",
+        time: "20:00"
+      },
+      status: {
+        short: "Q1",
+        long: statusMap.Q1
+      },
+      scores: {
+        home: { total: 88 },
+        away: { total: 85 }
+      }
+    }
+  }
+];

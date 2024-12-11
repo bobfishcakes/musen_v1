@@ -2,24 +2,24 @@
 
 import { UserOutlined } from '@ant-design/icons'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Api } from '@web/domain'
 import { AmericanFootballApi } from '@web/domain/americanFootball/americanFootball.api'
 import { BasketballApi } from '@web/domain/basketball/basketball.api'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { useAuthentication } from '@web/modules/authentication'
-import { Avatar, Button, Card, Col, List, Row, Typography } from 'antd'
+import { Avatar, Card, Col, List, Row, Typography } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+import GameCard from './gameCard'
 import { Game } from './interfaces'
 import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames, mockNflGames } from './mockData'
 import MusenTitle from './musenTitle'
 
-const USE_MOCK_DATA = false; // Developer toggle: Set to false to use real API calls
+const USE_MOCK_DATA = true; // Developer toggle: Set to false to use real API calls
 
 interface ApiResponse {
   response: Game[]
@@ -159,53 +159,20 @@ export default function HomePage() {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     padding: '20px',
     color: '#ffffff',
-    marginBottom: '20px',
+    // marginBottom: '20px',
     borderWidth: '0px',
   };
 
   const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
-    <List
-      itemLayout="horizontal"
-      dataSource={games}
-      renderItem={game => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={
-              <FontAwesomeIcon icon={icon} style={{ color: '#FFFFFF' }} />
-            }
-            title={
-              <span style={{ fontSize: '18px' }}>
-                {game.teams.away.name} @ {game.teams.home.name}
-              </span>
-            }
-            description={
-              <span style={{ fontSize: '16px', color: '#BAE0C0' }}>
-                Start time:{' '}
-                {game.date
-                  ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
-                  : game.game?.date
-                    ? dayjs(`${game.game.date.date} ${game.game.date.time}`)
-                        .tz('America/Chicago')
-                        .format('h:mm A [CT]')
-                    : 'Time TBD'}
-              </span>
-            }
-          />
-          <Button
-            type="primary"
-            onClick={() => navigateToStream(game.id, game)}
-            style={{
-              backgroundColor: '#3A5241',
-              borderColor: '#3A5241',
-              borderRadius: '50px',
-              paddingBottom: '5px',
-            }}
-          >
-              <FontAwesomeIcon icon={solidIcons.faVolumeUp} />
-          </Button>
-        </List.Item>
-      )}
+    <div style={{ marginTop: '20px' }}>
+  {games.map(game => (
+    <GameCard 
+      key={game.id}
+      game={game} 
+      onNavigate={navigateToStream}
     />
+  ))}
+</div>
   )
 
   return (
