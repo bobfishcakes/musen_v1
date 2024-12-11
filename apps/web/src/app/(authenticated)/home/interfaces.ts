@@ -3,6 +3,7 @@
 export interface Team {
     name: string
     id: string
+    logo?: string
   }
   
   export interface Teams {
@@ -28,7 +29,23 @@ export interface Team {
     game?: {
       date: GameDate
       status: {
-        short: string
-      }
+        long: string;
+        short: string;
+      };
+      scores?: Scores
     }
+  }
+
+  export interface Scores {
+    home: Score
+    away: Score
+  }
+
+  export interface Score {
+    total: number
+    quarter_1?: number
+    quarter_2?: number
+    quarter_3?: number
+    quarter_4?: number
+    overtime?: number
   }
