@@ -19,7 +19,7 @@ import { Game } from './interfaces'
 import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames, mockNflGames } from './mockData'
 import MusenTitle from './musenTitle'
 
-const USE_MOCK_DATA = true; // Developer toggle: Set to false to use real API calls
+const USE_MOCK_DATA = false; // Developer toggle: Set to false to use real API calls
 
 interface ApiResponse {
   response: Game[]

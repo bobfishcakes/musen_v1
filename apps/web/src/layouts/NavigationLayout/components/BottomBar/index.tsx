@@ -10,22 +10,22 @@ interface SocialLink {
 }
 
 const socialLinks: SocialLink[] = [
-  {
-    icon: <TwitterOutlined style={{ fontSize: '24px', color: 'white' }} />,
-    url: 'https://twitter.com/yourhandle'
-  },
-  {
-    icon: <YoutubeOutlined style={{ fontSize: '24px', color: 'white' }} />,
-    url: 'https://youtube.com/yourchannel'
-  },
-  {
-    icon: <LinkedinOutlined style={{ fontSize: '24px', color: 'white' }} />,
-    url: 'https://linkedin.com/in/yourprofile'
-  },
-  {
-    icon: <InstagramOutlined style={{ fontSize: '24px', color: 'white' }} />,
-    url: 'https://instagram.com/yourprofile'
-  }
+    {
+        icon: <InstagramOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://www.instagram.com/musen.sports/'
+    },
+    {
+        icon: <LinkedinOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://www.linkedin.com/company/musen-sports'
+    },
+    {
+        icon: <TwitterOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://musen.framer.website'
+    },
+    {
+        icon: <YoutubeOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://www.youtube.com/watch?v=Ti4sqG85FU4'
+    },
 ]
 
 interface BottomBarProps {
