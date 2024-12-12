@@ -81,26 +81,27 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
           {game.teams.away.name} @ {game.teams.home.name}
         </Title>
         <Description>
-        {game.status?.short === 'NS' ? (
-  game.date
-    ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
-    : game.game?.date
-      ? dayjs(`${game.game.date.date} ${game.game.date.time}`)
-          .tz('America/Chicago')
-          .format('h:mm A [CT]')
-      : 'Time TBD'
-) : (
-  <div>{game.status.long}</div>
-)}
+        {!game.status ? 'Status unavailable' : 
+          game.status.short === 'NS' ? (
+            game.date
+              ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
+              : game.game?.date
+                ? dayjs(`${game.game.date.date} ${game.game.date.time}`)
+                    .tz('America/Chicago')
+                    .format('h:mm A [CT]')
+                : 'Time TBD'
+          ) : (
+            <div>{game.status?.long || 'Status unavailable'}</div>
+          )}
         </Description>
       </ContentContainer>
       <ScoreContainer>
         <TeamScore>
           <Logo src={game.teams.away.logo} alt={game.teams.away.name} />
-          <Score>{game.scores?.away.total || 0 }</Score>
+          <Score>{game.scores?.away.total || 0}</Score>
         </TeamScore>
         <TeamScore>
-          <Score>{game.scores?.home.total|| 0}</Score>
+          <Score>{game.scores?.home.total || 0}</Score>
           <Logo src={game.teams.home.logo} alt={game.teams.home.name} />
         </TeamScore>
       </ScoreContainer>

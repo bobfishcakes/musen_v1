@@ -136,20 +136,35 @@ export default function HomePage() {
     fetchUserProfile()
   }, [userId, enqueueSnackbar])
 
-  const navigateToStream = (gameId: string, game: Game) => {
-    const gameInfo = {
-      id: gameId,
-      homeTeam: game.teams.home.name,
-      awayTeam: game.teams.away.name,
-      league: game.league.name,
-    }
+// In HomePage component, replace the existing navigateToStream function with:
 
+// In home/page.tsx, update the navigateToStream function:
+
+const navigateToStream = (gameId: string, game: Game) => {
+  // First verify that game has all required properties
+  if (!game?.teams?.home?.name || !game?.teams?.away?.name || !game?.league?.name) {
+    enqueueSnackbar('Invalid game data', { variant: 'error' });
+    return;
+  }
+
+  const gameInfo = {
+    id: gameId,
+    homeTeam: game.teams.home.name,
+    awayTeam: game.teams.away.name,
+    league: game.league.name,
+  }
+
+  try {
     router.push(
-      `/events/${gameId}/streamers?teams=${encodeURIComponent(
+      `/sync?gameId=${gameId}&teams=${encodeURIComponent(
         JSON.stringify(gameInfo),
       )}`,
     )
+  } catch (error) {
+    console.error('Navigation error:', error);
+    enqueueSnackbar('Error navigating to sync page', { variant: 'error' });
   }
+}
 
   const cardStyle = {
     opacity: 1.0,
@@ -163,17 +178,17 @@ export default function HomePage() {
     borderWidth: '0px',
   };
 
-  const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
-    <div style={{ marginTop: '20px' }}>
-  {games.map(game => (
-    <GameCard 
-      key={game.id}
-      game={game} 
-      onNavigate={navigateToStream}
-    />
-  ))}
-</div>
-  )
+const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
+  <div style={{ marginTop: '20px' }}>
+    {games.map((game) => (
+      <GameCard 
+        key={`${game.id}-${game.league?.name}`} // Add a more unique key
+        game={game} 
+        onNavigate={navigateToStream}
+      />
+    ))}
+  </div>
+)
 
   return (
     <PageLayout layout="narrow">
