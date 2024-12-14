@@ -47,14 +47,11 @@ export const Theme = {
       siderBg: '#000000', // black
     },
     Menu: {
-      activeBarBorderWidth: 0,
-      itemHeight: 30,
       itemBg: 'transparent',
-      itemColor: '#FFFFFF', // Updated to white text
-      itemHoverBg: '#1f1f23', // hover background color
-      itemSelectedBg: '#1f1f23', // selected background color
-      itemSelectedColor: 'white',
-      itemActiveBg: 'transparent',
+      itemColor: '#FFFFFF',
+      horizontalItemHoverBg: '#26362b',
+      horizontalItemSelectedColor: 'silver',
+      activeBarBorderWidth: 0,
     },
   },
 }

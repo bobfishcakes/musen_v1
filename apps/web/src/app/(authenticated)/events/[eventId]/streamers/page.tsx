@@ -87,7 +87,7 @@ export default function EventStreamersPage() {
       }}
     >
       <Card
-        style={{ backgroundColor: '#3A5241', marginBottom: '20px' }}
+        style={{ backgroundColor: 'black', marginBottom: '20px' }}
         bordered={false}
       >
         <Title
@@ -100,7 +100,7 @@ export default function EventStreamersPage() {
           - who's live?
         </Title>
       </Card>
-      <Card style={{ backgroundColor: '#3A5241' }} bordered={false}>
+      <Card style={{ backgroundColor: '#1e1e1e', margin: '40px', padding: '10px' }} bordered={false}>
         <List
           itemLayout="horizontal"
           dataSource={streams.length > 0 ? streams : dummyStreamers}
@@ -120,7 +120,7 @@ export default function EventStreamersPage() {
                     height: 'auto',
                   }}
                 >
-                  Listen Now
+                  Listen
                 </Button>,
               ]}
             >
@@ -133,7 +133,7 @@ export default function EventStreamersPage() {
                 }
                 description={
                   <div style={{ fontSize: '20px' }}>
-                    <Text style={{ color: '#BAE0C0' }}>
+                    <Text style={{ color: 'white' }}>
                       {item.description || 'N/A'}
                     </Text>
                     <br />
