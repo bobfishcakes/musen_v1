@@ -1,10 +1,14 @@
 // GameCard.tsx
+import { faBroadcastTower, faRadio } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import { Game } from './interfaces';
 
 interface GameCardProps {
   game: Game;
+  streamers?: number;
+  listeners?: number;
   onNavigate: (gameId: string, game: Game) => void;
 }
 
@@ -25,14 +29,13 @@ const StyledCard = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  flex: 1;
-  font-size: 1.1em; 
-`;
-
-const ScoreContainer = styled.div`
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 24px; 
+  text-align: center;
+  width: 100%;
+  height: 100%;
 `;
 
 const TeamScore = styled.div`
@@ -40,6 +43,7 @@ const TeamScore = styled.div`
   align-items: center;
   gap: 12px;
   min-width: 90px; 
+  margin-bottom: 10px;
 `;
 
 const Logo = styled.img`
@@ -58,8 +62,7 @@ opacity: 0.7;
 const Score = styled.span`
   font-size: 30px;
   font-weight: 600;
-  color: #BAE0C0;
-  min-width: 24px; // Ensure consistent spacing
+  min-width: 24px; 
   text-align: center;
 `;
 
@@ -71,11 +74,47 @@ const Title = styled.div`
 const Description = styled.div`
   font-size: 16px;
   color: #BAE0C0;
+  align-items: center;
 `;
 
-const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
+const StreamContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-left: auto;
+  align-items: center;
+`;
+
+const StreamData = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  span {
+    font-size: 20px;
+    font-weight: 600;
+  }
+`;
+
+const StreamLabel = styled.div`
+  font-size: 12px;
+  color: white;
+  text-align: center;
+  margin-top: 4px;
+`;
+
+const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listeners }) => {
   return (
     <StyledCard onClick={() => onNavigate(game.id, game)}>
+      <TeamScore>
+          {/* <Logo src={game.teams.away.logo} alt={game.teams.away.name} /> */}
+          <Score>{game.scores?.away.total || 0}</Score>
+        </TeamScore>
       <ContentContainer>
         <Title>
           {game.teams.away.name} @ {game.teams.home.name}
@@ -95,16 +134,26 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate }) => {
           )}
         </Description>
       </ContentContainer>
-      <ScoreContainer>
-        <TeamScore>
-          <Logo src={game.teams.away.logo} alt={game.teams.away.name} />
-          <Score>{game.scores?.away.total || 0}</Score>
-        </TeamScore>
         <TeamScore>
           <Score>{game.scores?.home.total || 0}</Score>
-          <Logo src={game.teams.home.logo} alt={game.teams.home.name} />
+          {/* <Logo src={game.teams.home.logo} alt={game.teams.home.name} /> */}
         </TeamScore>
-      </ScoreContainer>
+        <StreamContainer>
+  <div>
+    <StreamData>
+      <FontAwesomeIcon icon={faBroadcastTower} />
+      <span>{streamers ? streamers : 0}</span>
+    </StreamData>
+    <StreamLabel>streams</StreamLabel>
+  </div>
+  <div>
+    <StreamData>
+      <FontAwesomeIcon icon={faRadio} />
+      <span>{listeners ? listeners : 0}</span>
+    </StreamData>
+    <StreamLabel>listeners</StreamLabel>
+  </div>
+</StreamContainer>
     </StyledCard>
   );
 };
