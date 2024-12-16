@@ -22,7 +22,7 @@ import MusenTitle from './musenTitle'
 const USE_MOCK_DATA = false; // Developer toggle: Set to false to use real API calls
 
 interface ApiResponse {
-  response: Game[]
+response: Game[]
 }
 
 dayjs.extend(utc)
@@ -136,9 +136,6 @@ export default function HomePage() {
     fetchUserProfile()
   }, [userId, enqueueSnackbar])
 
-// In HomePage component, replace the existing navigateToStream function with:
-
-// In home/page.tsx, update the navigateToStream function:
 
 const navigateToStream = (gameId: string, game: Game) => {
   // First verify that game has all required properties

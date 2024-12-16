@@ -17,6 +17,7 @@ interface TimerProps {
   initialTime: number
   maxTime: number
   onTimeChange: (time: number) => void
+  onPauseChange: (isPaused: boolean) => void
 }
 
 const TimeButton = styled.button`
@@ -38,7 +39,7 @@ const TimeButton = styled.button`
 const StyledRangeInput = styled.input`
   width: 100%;
   height: 20px;
-  background-color: #2A3E31;
+  background-color: #808080; // Changed to gray for the unfilled area
   border-radius: 10px;
   cursor: pointer;
   appearance: none;
@@ -56,6 +57,17 @@ const StyledRangeInput = styled.input`
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
+  &::-webkit-slider-runnable-track {
+    height: 20px;
+    border-radius: 10px;
+    background: linear-gradient(to right, 
+      #2A3E31 0%, 
+      #2A3E31 var(--value-percent, 50%), 
+      #808080 var(--value-percent, 50%), 
+      #808080 100%
+    );
+  }
+
   &::-moz-range-thumb {
     width: 40px;
     height: 40px;
@@ -66,35 +78,78 @@ const StyledRangeInput = styled.input`
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
-  &::-webkit-slider-runnable-track {
-    height: 20px;
-    border-radius: 10px;
-    background-color: #2A3E31;
-  }
-
   &::-moz-range-track {
     height: 20px;
     border-radius: 10px;
-    background-color: #2A3E31;
+    background: linear-gradient(to right, 
+      #2A3E31 0%, 
+      #2A3E31 var(--value-percent, 50%), 
+      #808080 var(--value-percent, 50%), 
+      #808080 100%
+    );
   }
 `;
 
-const Timer: React.FC<TimerProps> = ({ initialTime, maxTime, onTimeChange }) => {
+const PlayButtonContainer = styled.div`
+  display: flex;           // Add this
+  align-items: center;     // Add this
+  justify-content: center; // Add this
+  padding: 12px 16px;
+  background-color: #3e3e3e;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #3A5241;
+  }
+`;
+
+const PlaySVG = styled.svg`
+  width: 24px; // Make the SVG smaller
+  height: 24px;
+
+  .circle {
+    stroke: #ffffff;
+    stroke-dasharray: 650;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  .triangle {
+    stroke: #ffffff;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+`;
+
+interface TimeButtonConfig {
+  label: string;
+  change: number | 'pause';
+}
+
+const Timer: React.FC<TimerProps> = ({ initialTime, maxTime, onTimeChange, onPauseChange }) => {
   const [time, setTime] = useState(initialTime)
   const [isPaused, setIsPaused] = useState(false)
 
-  // Update time and notify parent whenever time changes
   const updateTime = (newTime: number) => {
     setTime(newTime);
     onTimeChange(newTime);
   };
 
-  // Add this function where you need to format time
-const formatTime = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const percent = (time / maxTime) * 100;
+    const rangeInput = document.querySelector('input[type="range"]') as HTMLElement;
+    if (rangeInput) {
+      rangeInput.style.setProperty('--value-percent', `${percent}%`);
+    }
+  }, [time, maxTime]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -103,7 +158,7 @@ const formatTime = (seconds: number): string => {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime <= 0 ? 0 : prevTime - 0.1;
-          onTimeChange(newTime); // Notify parent of time change
+          onTimeChange(newTime);
           return newTime;
         });
       }, 100);
@@ -116,10 +171,30 @@ const formatTime = (seconds: number): string => {
     };
   }, [isPaused, onTimeChange]);
 
-  // Update the range input handler
   const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     updateTime(newTime);
+  };
+
+  const timeButtons: TimeButtonConfig[] = [
+    { label: '-10s', change: -10 },
+    { label: '-1s', change: -1 },
+    { label: isPaused ? '▶️' : '⏸️', change: 'pause' },
+    { label: '+1s', change: 1 },
+    { label: '+10s', change: 10 }
+  ];
+
+  const handleTimeButtonClick = (btn: TimeButtonConfig) => {
+    if (btn.change === 'pause') {
+      const newPausedState = !isPaused;
+      setIsPaused(newPausedState);
+      onPauseChange(newPausedState);
+    } else {
+      const newTime = btn.change < 0 
+        ? Math.max(0, time + btn.change)
+        : Math.min(maxTime, time + btn.change);
+      updateTime(newTime);
+    }
   };
 
   return (
@@ -150,24 +225,45 @@ const formatTime = (seconds: number): string => {
         gap: '15px',
         marginBottom: '1.5rem'
       }}>
-        {[
-          { label: '-10s', change: -10 },
-          { label: '-1s', change: -1 },
-          { label: '+1s', change: 1 },
-          { label: '+10s', change: 10 }
-        ].map((btn) => (
-          <TimeButton
-            key={btn.label}
-            onClick={() => {
-              const newTime = btn.change < 0 
-                ? Math.max(0, time + btn.change)
-                : Math.min(maxTime, time + btn.change);
-              setTime(newTime);
-            }}
-          >
-            {btn.label}
-          </TimeButton>
-        ))}
+{timeButtons.map((btn) => (
+  btn.change === 'pause' ? (
+    <PlayButtonContainer key={btn.label} onClick={() => handleTimeButtonClick(btn)}>
+      <PlaySVG
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 213.7 213.7"
+      >
+        <polygon
+          className="triangle"
+          fill="none"
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeMiterlimit="10"
+          points="73.5,62.5 148.5,105.8 73.5,149.1"
+        />
+        <circle
+          className="circle"
+          fill="none"
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeMiterlimit="10"
+          cx="106.8"
+          cy="106.8"
+          r="103.3"
+        />
+      </PlaySVG>
+    </PlayButtonContainer>
+  ) : (
+    <TimeButton
+      key={btn.label}
+      onClick={() => handleTimeButtonClick(btn)}
+    >
+      {btn.label}
+    </TimeButton>
+  )
+))}
       </div>
 
       <div style={{ 
@@ -199,12 +295,10 @@ const QuarterButton = styled.div<{ selected: boolean }>`
   padding: 24px 32px;
   background: ${props => props.selected ? '#3A5241' : '#3e3e3e'};
   border-radius: 12px;
-  margin-bottom: 20px;
   transition: background-color 0.2s ease;
   cursor: pointer;
   text-align: center;
-  width: 100%;
-  max-width: 280px;
+  width: 200px; // Fixed width for all quarter buttons
 `;
 
 const QuarterTitle = styled.div`
@@ -256,6 +350,9 @@ export default function SyncPage() {
   const [selectedTime, setSelectedTime] = useState<number>(0)
   const [selectedQuarter, setSelectedQuarter] = useState<string>('1')
 
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const quarters = [
     { value: '1', title: '1st Quarter' },
     { value: '2', title: '2nd Quarter' },
@@ -282,25 +379,31 @@ export default function SyncPage() {
   }, [searchParams])
 
   const handleContinue = () => {
-    const gameId = searchParams.get('gameId')
-    const teams = searchParams.get('teams')
-    
-    // Log the actual selected time
-    console.log('Selected Quarter:', selectedQuarter)
-    console.log('Time on Clock:', selectedTime)
+    if (isTimerPaused) {
+      setErrorMessage("Cannot confirm time when clock is stopped");
+      return;
+    }
+
+    setErrorMessage(null);
+    const gameId = searchParams.get('gameId');
+    const teams = searchParams.get('teams');
     
     if (gameId && teams) {
-      // Create an object with the game info and timing details
       const gameInfoWithTime = {
         ...gameInfo,
         selectedQuarter,
-        timeOnClock: selectedTime // This will now have the correct time
-      }
+        timeOnClock: selectedTime
+      };
       
-      const encodedInfo = encodeURIComponent(JSON.stringify(gameInfoWithTime))
-      router.push(`/events/${gameId}/streamers?teams=${encodedInfo}`)
+      const encodedInfo = encodeURIComponent(JSON.stringify(gameInfoWithTime));
+      router.push(`/events/${gameId}/streamers?teams=${encodedInfo}`);
     }
-  }
+  };
+
+  const handlePauseChange = (isPaused: boolean) => {
+    setIsTimerPaused(isPaused);
+    setErrorMessage(isPaused ? "Cannot confirm time when clock is stopped" : null);
+  };
 
   const getMaxTime = () => {
     if (!gameInfo) return 720
@@ -319,59 +422,91 @@ export default function SyncPage() {
         </div>
       )}  
       <StyledCard>
-        <div style={{ display: 'flex', gap: '60px', alignItems: 'flex-start', height: '100%' }}>
-          <div style={{ flex: '0 0 auto' }}>
-            <div>
-              {quarters.map(quarter => (
-                <QuarterButton
-                  key={quarter.value}
-                  selected={selectedQuarter === quarter.value}
-                  onClick={() => setSelectedQuarter(quarter.value)}
-                >
-                  <QuarterTitle>{quarter.title}</QuarterTitle>
-                </QuarterButton>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
-  {gameInfo && (
-    <>
-      <h2 style={{ 
-        color: '#ffffff', 
-        fontSize: '3.5rem', 
-        margin: 0, // Remove default margins
-        marginBottom: '4.2rem', // Add space between title and slider
-        textAlign: 'center',
-        fontFamily: 'monospace',
-        paddingTop: '15px' // Match the padding of QuarterButton
-      }}>
-        Time on Clock
-      </h2>
-      <Timer 
-        initialTime={selectedTime} 
-        maxTime={getMaxTime()}
-        onTimeChange={setSelectedTime} 
-      />
-    </>
-  )}
-</div>
+        {/* Quarter buttons container */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: '20px', 
+          marginBottom: '40px'
+        }}>
+          {quarters.map(quarter => (
+            <QuarterButton
+              key={quarter.value}
+              selected={selectedQuarter === quarter.value}
+              onClick={() => setSelectedQuarter(quarter.value)}
+              style={{ margin: 0 }} // Override margin-bottom
+            >
+              <QuarterTitle>{quarter.title}</QuarterTitle>
+            </QuarterButton>
+          ))}
         </div>
+  
+        {/* Timer section */}
+        <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+          {gameInfo && (
+            <>
+              <Timer 
+                initialTime={selectedTime} 
+                maxTime={getMaxTime()}
+                onTimeChange={setSelectedTime}
+                onPauseChange={handlePauseChange}
+              />
+            </>
+          )}
+        </div>
+  
+        {/* Continue button section */}
 
-<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-  <ContinueButton
-type="primary" size="large" onClick={handleContinue} style={{ fontSize: '24px', padding: '24px 32px', height: 'auto' , fontWeight: 'bold' }}
-disabled={!selectedQuarter || selectedTime === null}
-  >
-    Confirm Your Game Time
-  </ContinueButton>
-  <span style={{ 
-    color: '#BAE0C0',  // Using the same green color used elsewhere
-    fontSize: '1.2rem',
-    marginTop: '15px',
-    fontStyle: 'italic'
+<div style={{ 
+  display: 'flex', 
+  flexDirection: 'column', 
+  alignItems: 'center',
+  width: '100%', // Ensure full width
+  position: 'relative' // For absolute positioning of the message
+}}>
+<ContinueButton
+  type="primary"
+  size="large"
+  onClick={handleContinue}
+  style={{
+    fontSize: '35px',
+    padding: '24px 48px',
+    height: 'auto',
+    fontWeight: 'bold',
+    width: '400px',
+    display: 'flex',         // Add display flex
+    justifyContent: 'center', // Center content horizontally
+    alignItems: 'center',     // Center content vertically
+    whiteSpace: 'nowrap',     // Prevent text from wrapping
+    overflow: 'hidden',       // Prevent text overflow
+    textOverflow: 'ellipsis', // Add ellipsis if text overflows
+  }}
+  disabled={!selectedQuarter || selectedTime === null || isTimerPaused}
+>
+  Confirm Time
+</ContinueButton>
+  
+  {isTimerPaused && (
+    <div style={{
+      color: '#ff4d4f',
+      fontSize: '1rem',
+      marginTop: '8px',
+      fontWeight: 'bold'
+    }}>
+      Cannot confirm time when clock is stopped
+    </div>
+  )}
+  
+  <span style={{
+    color: '#BAE0C0',
+    fontSize: '0.9rem', // Smaller font
+    fontStyle: 'italic',
+    position: 'absolute',
+    bottom: '-50px', // Position below the button
+    right: '-50px', // Align to right
+    marginTop: '15px'
   }}>
-    *You can tune your stream to the millisecond while listening if needed
+    *You can fine-tune your stream to the millisecond while listening
   </span>
 </div>
       </StyledCard>

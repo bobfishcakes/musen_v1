@@ -15,6 +15,25 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 
+const cardStyle = {
+  opacity: 1.0,
+  backgroundColor: '#1e1e1e',
+  backgroundSize: '100px 100px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  padding: '20px',
+  color: '#ffffff',
+  borderWidth: '0px',
+};
+
+const titleStyle = {
+  color: 'white'
+};
+
+const textStyle = {
+  color: '#BAE0C0'  // Light green color for dates/times
+};
+
 const { Title, Text } = Typography
 
 // Sample initial comments
@@ -180,16 +199,17 @@ export default function StreamerLiveFeedPage() {
   return (
     <PageLayout layout="narrow">
       {pageInfo && (
-        <Title level={2}>
+        <Title level={2} style={titleStyle}>
           Live Stream: {pageInfo.game.awayTeam} @ {pageInfo.game.homeTeam}
         </Title>
       )}
       <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
         <Col xs={24} md={12}>
           <Card
-            title="Audience Comments"
+            title={<span style={titleStyle}>Audience Comments</span>}
             bordered={false}
-            extra={<CommentOutlined />}
+            extra={<CommentOutlined style={{ color: 'white' }} />}
+            style={cardStyle}
           >
             <List
               itemLayout="horizontal"
@@ -204,19 +224,14 @@ export default function StreamerLiveFeedPage() {
                 >
                   <List.Item.Meta
                     avatar={<Avatar src={comment.user?.pictureUrl} />}
-                    title={comment.user?.name}
+                    title={<span style={{ color: 'white' }}>{comment.user?.name}</span>}
                     description={
-                      <div style={{ maxWidth: '500px' }}>
-                        {' '}
-                        {/* Limit the width of comments */}
+                      <div style={{ maxWidth: '500px', color: 'white' }}>
                         {comment.content}
                       </div>
                     }
                   />
-                  <Text
-                    type="secondary"
-                    style={{ flexShrink: 0, marginLeft: '24px' }}
-                  >
+                  <Text style={textStyle}>
                     {dayjs(comment.commentTime).format('HH:mm')}
                   </Text>
                 </List.Item>
@@ -228,9 +243,10 @@ export default function StreamerLiveFeedPage() {
           <Row gutter={[16, 16]}>
             <Col span={24}>
               <Card
-                title="Current Earnings"
+                title={<span style={titleStyle}>Current Earnings</span>}
                 bordered={false}
-                extra={<DollarCircleOutlined />}
+                extra={<DollarCircleOutlined style={{ color: 'white' }} />}
+                style={cardStyle}
               >
                 <Statistic
                   value={earnings.reduce(
@@ -239,14 +255,16 @@ export default function StreamerLiveFeedPage() {
                   )}
                   precision={2}
                   prefix="$"
+                  style={{ color: 'white' }}
                 />
               </Card>
             </Col>
             <Col span={24}>
               <Card
-                title="New Subscribers"
+                title={<span style={titleStyle}>New Subscribers</span>}
                 bordered={false}
-                extra={<UserAddOutlined />}
+                extra={<UserAddOutlined style={{ color: 'white' }} />}
+                style={cardStyle}
               >
                 <List
                   itemLayout="horizontal"
@@ -255,9 +273,9 @@ export default function StreamerLiveFeedPage() {
                     <List.Item>
                       <List.Item.Meta
                         avatar={<Avatar src={subscriber.user?.pictureUrl} />}
-                        title={subscriber.user?.name}
+                        title={<span style={{ color: 'white' }}>{subscriber.user?.name}</span>}
                       />
-                      <Text type="secondary">
+                      <Text style={textStyle}>
                         {dayjs(subscriber.startDate).format('MMM DD, YYYY')}
                       </Text>
                     </List.Item>
@@ -269,5 +287,5 @@ export default function StreamerLiveFeedPage() {
         </Col>
       </Row>
     </PageLayout>
-  )
+);
 }

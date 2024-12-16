@@ -18,6 +18,8 @@ interface Streamer {
   name: string
   listeners: number
   description: string
+  tag: string  // Add this line
+
 }
 
 export default function EventStreamersPage() {
@@ -39,21 +41,22 @@ export default function EventStreamersPage() {
       id: '1',
       name: 'Emily Jones',
       listeners: 120,
-      description:
-        'Let me teach you how the game is played with pop culture references!',
+      description: 'Let me teach you how the game is played with pop culture references!',
+      tag: '#culture'
     },
     {
       id: '2',
       name: 'John Doe',
       listeners: 80,
-      description:
-        'I hit my 5 last parlays - make another $1000 with me this game',
+      description: 'I hit my 5 last parlays - make another $1000 with me this game',
+      tag: '#betting'
     },
     {
       id: '3',
       name: 'José Ramirez',
       listeners: 150,
       description: '¡Qué divertido! Veamos a los Chiefs ganar juntos',
+      tag: '#spanish'
     },
   ]
 
@@ -66,9 +69,10 @@ export default function EventStreamersPage() {
           name: streamer.name,
           listeners: streamer.listeners,
           description: streamer.description,
+          tag: streamer.tag,  // Add this line
         },
       }
-
+  
       router.push(
         `/events/${gameInfo.id}/streamers/${streamer.id}?info=${encodeURIComponent(
           JSON.stringify(pageInfo),
@@ -126,10 +130,19 @@ export default function EventStreamersPage() {
             >
               <List.Item.Meta
                 title={
-                  <Text strong style={{ fontSize: '30px' }}>
+                  <div>
+                  <Text strong style={{ fontSize: '30px', color: 'white' }}>
                     {item.streamer?.name || item.name}
-                    <br />
                   </Text>
+                  <Text style={{ 
+                    fontSize: '16px', 
+                    color: '#BAE0C0', 
+                    marginLeft: '10px',
+                    fontStyle: 'italic'
+                  }}>
+                    {item.tag}
+                  </Text>
+                </div>
                 }
                 description={
                   <div style={{ fontSize: '20px' }}>

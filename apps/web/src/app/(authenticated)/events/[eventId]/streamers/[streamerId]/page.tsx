@@ -19,12 +19,38 @@ import {
   List,
   Row,
   Space,
-  Typography,
+  Typography
 } from 'antd'
 import { UserStatus } from 'apps/web/src/domain/user/user.model'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+
+const cardStyle = {
+  opacity: 1.0,
+  backgroundColor: '#1e1e1e',
+  backgroundSize: '100px 100px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  padding: '20px',
+  color: '#ffffff',
+  borderWidth: '0px',
+};
+
+const buttonStyle = {
+  backgroundColor: '#3e3e3e',
+  color: 'white',
+  border: 'none',
+  transition: 'background-color 0.2s ease',
+};
+
+const buttonHoverStyle = `
+  .ant-btn:hover {
+    background-color: #3A5241 !important;
+    border-color: #3A5241 !important;
+    color: white !important;
+  }
+`;
 
 const { Title, Text: TypographyText } = Typography
 
@@ -207,135 +233,95 @@ export default function UserStreamPage() {
 
   return (
     <PageLayout layout="narrow">
+      <style jsx global>{buttonHoverStyle}</style>
       {pageInfo && (
         <div>
           <Title level={2}>
-            {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @{' '}
-            {pageInfo.game.homeTeam}
+            {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @ {pageInfo.game.homeTeam}
           </Title>
-
+  
           <TypographyText style={{ display: 'block', marginBottom: '16px' }}>
             Current Listeners: {pageInfo.streamer.listeners}
           </TypographyText>
-
+  
           <Row gutter={[16, 16]}>
-            <Col span={24}>
-              <Card style={{ border: '1px solid white' }}>
-                <List
-                  className="chat-box"
-                  style={{
-                    height: '400px',
-                    overflowY: 'auto',
-                    marginBottom: '16px',
-                  }}
-                  dataSource={comments}
-                  renderItem={comment => (
-                    <List.Item key={comment.id}>
-                      <List.Item.Meta
-                        avatar={<Avatar src={comment.user?.pictureUrl} />}
-                        title={comment.user?.name}
-                        description={comment.content}
-                      />
-                    </List.Item>
-                  )}
+          <Col span={24}>
+            <Card style={cardStyle}>
+              <List
+                className="chat-box"
+                style={{
+                  height: '400px',
+                  overflowY: 'auto',
+                  marginBottom: '16px',
+                }}
+                dataSource={comments} // This keeps your dummy comments
+                renderItem={comment => (
+                  <List.Item key={comment.id}>
+                    <List.Item.Meta
+                      avatar={<Avatar src={comment.user?.pictureUrl} />}
+                      title={comment.user?.name}
+                      description={comment.content}
+                    />
+                  </List.Item>
+                )}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Input.TextArea
+                  rows={2}
+                  value={newComment}
+                  onChange={e => setNewComment(e.target.value)}
+                  placeholder="Type your comment here..."
+                  style={{ borderRadius: '4px' }}
                 />
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                  }}
+                <Button
+                  style={{...buttonStyle, alignSelf: 'center'}}
+                  onClick={handleCommentSubmit}
+                  icon={<CommentOutlined style={{ color: 'white' }} />}
                 >
-                  <style jsx global>{`
-                    .ant-input-textarea textarea {
-                      border: 1px solid white !important;
-                      box-shadow: none !important;
-                    }
-                    .ant-input-textarea textarea:focus {
-                      border-color: white !important;
-                      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
-                    }
-                    .ant-input-textarea textarea:hover {
-                      border-color: white !important;
-                    }
-                  `}</style>
-                  <Input.TextArea
-                    rows={2}
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                    placeholder="Type your comment here..."
-                    style={{
-                      border: '1px solid white',
-                      borderRadius: '4px',
-                    }}
+                  Comment
+                </Button>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={16} style={{ marginTop: '16px' }}>
+          <Col span={12}>
+            <Card title="Want to show support?" style={cardStyle}>
+              <Form layout="inline" onFinish={handleDonationSubmit}>
+                <Space>
+                  <InputNumber
+                    min={1}
+                    value={donationAmount}
+                    onChange={value => setDonationAmount(value ? value : 0)}
+                    placeholder="Amount"
                   />
                   <Button
-                    style={{
-                      alignSelf: 'center',
-                      backgroundColor: '#81A18B',
-                      color: 'white',
-                    }}
-                    onClick={handleCommentSubmit}
-                    icon={<CommentOutlined style={{ color: 'white' }} />}
+                    style={buttonStyle}
+                    htmlType="submit"
+                    icon={<DollarOutlined style={{ color: 'white' }} />}
                   >
-                    Comment
+                    Donate
                   </Button>
-                </div>
-              </Card>
-            </Col>
-          </Row>
+                </Space>
+              </Form>
+            </Card>
+          </Col>
 
-          <Row gutter={16} style={{ marginTop: '16px' }}>
-            <Col span={12}>
-              <Card
-                title="Want to show support?"
-                style={{ border: '1px solid white' }}
+          <Col span={12}>
+            <Card title="Want exclusive content?" style={cardStyle}>
+              <Button
+                style={{...buttonStyle, width: '100%'}}
+                icon={<HeartOutlined style={{ color: 'white' }} />}
+                onClick={handleSubscribe}
               >
-                <Form layout="inline" onFinish={handleDonationSubmit}>
-                  <Space>
-                    <InputNumber
-                      min={1}
-                      value={donationAmount}
-                      onChange={value => setDonationAmount(value ? value : 0)}
-                      placeholder="Amount"
-                      style={{ borderColor: 'white' }}
-                    />
-                    <Button
-                      style={{
-                        backgroundColor: '#81A18B',
-                        color: 'white',
-                      }}
-                      htmlType="submit"
-                      icon={<DollarOutlined style={{ color: 'white' }} />}
-                    >
-                      Donate
-                    </Button>
-                  </Space>
-                </Form>
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card
-                title="Want exclusive content?"
-                style={{ border: '1px solid white' }}
-              >
-                <Button
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#81A18B',
-                    color: 'white',
-                  }}
-                  icon={<HeartOutlined style={{ color: 'white' }} />}
-                  onClick={handleSubscribe}
-                >
-                  Subscribe to {pageInfo.streamer.name}
-                </Button>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      )}
-    </PageLayout>
-  )
+                Subscribe to {pageInfo.streamer.name}
+              </Button>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )}
+  </PageLayout>
+  );
 }

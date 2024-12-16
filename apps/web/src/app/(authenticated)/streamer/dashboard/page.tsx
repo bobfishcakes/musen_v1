@@ -19,6 +19,51 @@ import { useEffect, useState } from 'react'
 const { Title, Text, Paragraph } = Typography
 const { Option } = Select
 
+const cardStyle = {
+  opacity: 1.0,
+  backgroundColor: '#1e1e1e',
+  backgroundSize: '100px 100px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  padding: '20px',
+  color: '#ffffff',
+  borderWidth: '0px',
+};
+
+const dateStyle = {
+  color: '#BAE0C0'  // Lighter shade of green from home page
+};
+
+const buttonStyle = {
+  backgroundColor: '#3A5241',
+  color: 'white',
+  border: 'none',
+  marginLeft: '16px'  // Add margin to separate from dropdown
+};
+
+const selectStyle = {
+  width: 'calc(100% - 140px)',  // Adjust width to accommodate button
+  backgroundColor: '#1e1e1e',  // Gray background
+};
+
+const globalStyle = `
+  .ant-select-dropdown {
+    background-color: #1e1e1e !important;  // Gray dropdown background
+  }
+  .ant-select-item {
+    color: white !important;
+  }
+  .ant-select-item-option-selected,
+  .ant-select-item-option-active {
+    background-color: #3A5241 !important;  // Green when selected/hovered
+  }
+  .ant-select-selector {
+    background-color: #1e1e1e !important;  // Gray background
+    color: white !important;
+    border: none !important;
+  }
+`;
+
 const dummyEarnings: DummyEarning[] = [
   {
     id: '1',
@@ -263,8 +308,9 @@ export default function StreamerDashboardPage() {
 
   return (
     <PageLayout layout="narrow">
-      <Title level={2}>Streamer Dashboard</Title>
-      <Paragraph>
+      <style jsx global>{globalStyle}</style>
+      <Title level={2} style={{ color: 'white' }}>Streamer Dashboard</Title>
+      <Paragraph style={{ color: 'white' }}>
         Welcome to your dashboard. Here you can monitor your profits, access
         pre-generated clips, and start a new live stream.
       </Paragraph>
@@ -273,48 +319,29 @@ export default function StreamerDashboardPage() {
           <Card
             title={
               <>
-                <DollarCircleOutlined
-                  style={{ marginRight: 8, color: 'black' }}
-                />
-                Your Earnings
+                <DollarCircleOutlined style={{ marginRight: 8, color: 'white' }} />
+                <span style={{ color: 'white' }}>Your Earnings</span>
               </>
             }
+            style={cardStyle}
             bordered={false}
           >
             <List
               itemLayout="horizontal"
-              dataSource={[
-                {
-                  id: '1',
-                  amount: 25.0,
-                  earningTime: new Date(Date.now() - 86400000).toISOString(),
-                },
-                {
-                  id: '2',
-                  amount: 15.5,
-                  earningTime: new Date(Date.now() - 172800000).toISOString(),
-                },
-                {
-                  id: '3',
-                  amount: 30.25,
-                  earningTime: new Date(Date.now() - 259200000).toISOString(),
-                },
-              ]}
+              dataSource={dummyEarnings}
               renderItem={earning => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
                       <Avatar
-                        icon={
-                          <DollarCircleOutlined style={{ color: 'black' }} />
-                        }
+                        icon={<DollarCircleOutlined style={{ color: 'white' }} />}
                         style={{ backgroundColor: 'transparent' }}
                       />
                     }
-                    title={`$${earning.amount.toFixed(2)}`}
-                    description={dayjs(earning.earningTime).format(
-                      'MMMM D, YYYY',
-                    )}
+                    title={<span style={{ color: 'white' }}>${earning.amount.toFixed(2)}</span>}
+                    description={<span style={dateStyle}>
+                      {dayjs(earning.earningTime).format('MMMM D, YYYY')}
+                    </span>}
                   />
                 </List.Item>
               )}
@@ -325,41 +352,22 @@ export default function StreamerDashboardPage() {
           <Card
             title={
               <>
-                <VideoCameraOutlined
-                  style={{ marginRight: 8, color: 'black' }}
-                />
-                Pre-generated Clips
+                <VideoCameraOutlined style={{ marginRight: 8, color: 'white' }} />
+                <span style={{ color: 'white' }}>Pre-generated Clips</span>
               </>
             }
+            style={cardStyle}
             bordered={false}
           >
             <List
               itemLayout="horizontal"
-              dataSource={[
-                {
-                  id: '1',
-                  url: 'https://example.com/clip1',
-                  creationTime: new Date(Date.now() - 86400000).toISOString(),
-                },
-                {
-                  id: '2',
-                  url: 'https://example.com/clip2',
-                  creationTime: new Date(Date.now() - 172800000).toISOString(),
-                },
-                {
-                  id: '3',
-                  url: 'https://example.com/clip3',
-                  creationTime: new Date(Date.now() - 259200000).toISOString(),
-                },
-              ]}
+              dataSource={dummyClips}
               renderItem={clip => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
                       <Avatar
-                        icon={
-                          <VideoCameraOutlined style={{ color: 'black' }} />
-                        }
+                        icon={<VideoCameraOutlined style={{ color: 'white' }} />}
                         style={{ backgroundColor: 'transparent' }}
                       />
                     }
@@ -368,13 +376,14 @@ export default function StreamerDashboardPage() {
                         href={clip.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        style={{ color: 'white' }}
                       >
                         View Clip
                       </a>
                     }
-                    description={dayjs(clip.creationTime).format(
-                      'MMMM D, YYYY',
-                    )}
+                    description={<span style={dateStyle}>
+                      {dayjs(clip.creationTime).format('MMMM D, YYYY')}
+                    </span>}
                   />
                 </List.Item>
               )}
@@ -382,38 +391,42 @@ export default function StreamerDashboardPage() {
           </Card>
         </Col>
         <Col span={24}>
-          <Card
-            title={
-              <>
-                <PlayCircleOutlined style={{ marginRight: 8 }} />
-                Start a Live Stream
-              </>
-            }
-            bordered={false}
-          >
-            <Select
-              style={{ width: '100%' }}
-              dropdownStyle={{ backgroundColor: '#628A6E' }}
-              className="custom-select"
-              placeholder="Select a sporting event"
-              onChange={value => setSelectedEvent(value)}
-            >
-              {Array.isArray(sportingEvents) &&
-                sportingEvents.map(event => (
-                  <Option key={event.id} value={event.id}>
-                    {event.name} -{' '}
-                    {dayjs(event.startTime).format('h:mm A [CT]')}
-                  </Option>
-                ))}
-            </Select>
-            <Button
-              type="primary"
-              onClick={handleStartStream}
-              style={{ marginTop: '16px', color: 'black' }}
-            >
-              Start Streaming
-            </Button>
-          </Card>
+        <Card
+  title={
+    <>
+      <PlayCircleOutlined style={{ marginRight: 8, color: 'white' }} />
+      <span style={{ color: 'white' }}>Start a Live Stream</span>
+    </>
+  }
+  style={cardStyle}
+  bordered={false}
+>
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <Select
+      style={selectStyle}
+      className="custom-select"
+      placeholder="Select a sporting event"
+      onChange={value => setSelectedEvent(value)}
+    >
+      {Array.isArray(sportingEvents) &&
+        sportingEvents.map(event => (
+          <Option key={event.id} value={event.id}>
+            {event.name} -{' '}
+            <span style={dateStyle}>
+              {dayjs(event.startTime).format('h:mm A [CT]')}
+            </span>
+          </Option>
+        ))}
+    </Select>
+    <Button
+      type="primary"
+      onClick={handleStartStream}
+      style={buttonStyle}
+    >
+      Start Streaming
+    </Button>
+  </div>
+</Card>
         </Col>
       </Row>
     </PageLayout>
