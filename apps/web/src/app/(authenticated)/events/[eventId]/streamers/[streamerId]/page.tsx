@@ -156,7 +156,7 @@ export default function UserStreamPage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
-
+  const [currentView, setCurrentView] = useState<'chat' | 'stats'>('chat')
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
   const [stream, setStream] = useState<Model.Stream | null>(null)
   const [comments, setComments] = useState<Model.Comment[]>(initialComments)
@@ -236,54 +236,95 @@ export default function UserStreamPage() {
       <style jsx global>{buttonHoverStyle}</style>
       {pageInfo && (
         <div>
-          <Title level={2}>
-            {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @ {pageInfo.game.homeTeam}
-          </Title>
-  
-          <TypographyText style={{ display: 'block', marginBottom: '16px' }}>
-            Current Listeners: {pageInfo.streamer.listeners}
-          </TypographyText>
-  
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <div>
+              <Title level={2}>
+                {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @ {pageInfo.game.homeTeam}
+              </Title>
+              <TypographyText>
+                Current Listeners: {pageInfo.streamer.listeners}
+              </TypographyText>
+            </div>
+            <Space>
+              <Button
+                type={currentView === 'chat' ? 'primary' : 'default'}
+                onClick={() => setCurrentView('chat')}
+                style={currentView === 'chat' ? 
+                  {...buttonStyle, backgroundColor: '#3A5241'} : 
+                  buttonStyle
+                }
+              >
+                Chat
+              </Button>
+              <Button
+                type={currentView === 'stats' ? 'primary' : 'default'}
+                onClick={() => setCurrentView('stats')}
+                style={currentView === 'stats' ? 
+                  {...buttonStyle, backgroundColor: '#3A5241'} : 
+                  buttonStyle
+                }
+              >
+                Stats & Odds
+              </Button>
+            </Space>
+          </div>
+
           <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Card style={cardStyle}>
-              <List
-                className="chat-box"
-                style={{
-                  height: '400px',
-                  overflowY: 'auto',
-                  marginBottom: '16px',
-                }}
-                dataSource={comments} // This keeps your dummy comments
-                renderItem={comment => (
-                  <List.Item key={comment.id}>
-                    <List.Item.Meta
-                      avatar={<Avatar src={comment.user?.pictureUrl} />}
-                      title={comment.user?.name}
-                      description={comment.content}
+            <Col span={24}>
+              {currentView === 'chat' ? (
+                <Card style={cardStyle}>
+                  <List
+                    className="chat-box"
+                    style={{
+                      height: '400px',
+                      overflowY: 'auto',
+                      marginBottom: '16px',
+                    }}
+                    dataSource={comments}
+                    renderItem={comment => (
+                      <List.Item key={comment.id}>
+                        <List.Item.Meta
+                          avatar={<Avatar src={comment.user?.pictureUrl} />}
+                          title={comment.user?.name}
+                          description={comment.content}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Input.TextArea
+                      rows={2}
+                      value={newComment}
+                      onChange={e => setNewComment(e.target.value)}
+                      placeholder="Type your comment here..."
+                      style={{ borderRadius: '4px' }}
                     />
-                  </List.Item>
-                )}
-              />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <Input.TextArea
-                  rows={2}
-                  value={newComment}
-                  onChange={e => setNewComment(e.target.value)}
-                  placeholder="Type your comment here..."
-                  style={{ borderRadius: '4px' }}
-                />
-                <Button
-                  style={{...buttonStyle, alignSelf: 'center'}}
-                  onClick={handleCommentSubmit}
-                  icon={<CommentOutlined style={{ color: 'white' }} />}
-                >
-                  Comment
-                </Button>
-              </div>
-            </Card>
-          </Col>
-        </Row>
+                    <Button
+                      style={{...buttonStyle, alignSelf: 'center'}}
+                      onClick={handleCommentSubmit}
+                      icon={<CommentOutlined style={{ color: 'white' }} />}
+                    >
+                      Comment
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <Card style={cardStyle}>
+                  <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Typography.Text style={{ color: '#ffffff' }}>
+                      Stats & Odds view coming soon...
+                    </Typography.Text>
+                  </div>
+                </Card>
+              )}
+            </Col>
+          </Row>
+
 
         <Row gutter={16} style={{ marginTop: '16px' }}>
           <Col span={12}>
