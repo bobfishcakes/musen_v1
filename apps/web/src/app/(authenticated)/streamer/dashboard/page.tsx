@@ -52,17 +52,17 @@ const globalStyle = `
   }
   .ant-select-item {
     color: white !important;
-    margin-bottom: 6px !important;  // Add spacing between items
+    margin-bottom: 2px !important;  // Add spacing between items
   }
   .ant-select-item-option {
-    background-color: #4A4A4A !important;  // Default background color for non-hovered items
+    background-color: #000000 !important;  // Default background color for non-hovered items
   }
   .ant-select-item-option-selected,
   .ant-select-item-option-active {
     background-color: #3A5241 !important;  // Darker green when selected/hovered
   }
   .ant-select-selector {
-    background-color: #1e1e1e !important;  // Gray background
+    background-color: #4A4A4A !important;  // Gray background
     color: white !important;
     border: none !important;
   }
