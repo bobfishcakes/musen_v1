@@ -128,41 +128,46 @@ export default function EventStreamersPage() {
                 </Button>,
               ]}
             >
-              <List.Item.Meta
-                title={
-                  <div>
-                  <Text strong style={{ fontSize: '30px', color: 'white' }}>
-                    {item.streamer?.name || item.name}
-                  </Text>
-                  <Text style={{ 
-                    fontSize: '16px', 
-                    color: '#BAE0C0', 
-                    marginLeft: '10px',
-                    fontStyle: 'italic'
-                  }}>
-                    {item.tag}
-                  </Text>
-                </div>
-                }
-                description={
-                  <div style={{ fontSize: '20px' }}>
-                    <Text style={{ color: 'white' }}>
-                      {item.description || 'N/A'}
-                    </Text>
-                    <br />
-                    <br />
-                    <Text
-                      style={{
-                        fontSize: '18px',
-                        fontStyle: 'italic',
-                        color: '#BAE0C0',
-                      }}
-                    >
-                      Listeners: {item.listeners || 'N/A'}
-                    </Text>
-                  </div>
-                }
-              />
+<List.Item.Meta
+  title={
+    <div style={{ marginBottom: '8px' }}>
+      <Text strong style={{ fontSize: '30px', color: 'white', display: 'block' }}>
+        {item.streamer?.name || item.name}
+      </Text>
+      <div style={{ marginTop: '2px'}}>
+        <span style={{
+          backgroundColor: '#3A5241',
+          color: '#ffffff',
+          padding: '3px 12px',
+          borderRadius: '16px',
+          fontSize: '14px',
+          fontStyle: 'italic',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }}>
+          {item.tag.replace('#', '')}
+        </span>
+      </div>
+    </div>
+  }
+  description={
+    <div style={{ fontSize: '20px' }}>
+      <Text style={{ color: 'white' }}>
+        {item.description || 'N/A'}
+      </Text>
+      <br />
+      <br />
+      <Text
+        style={{
+          fontSize: '18px',
+          color: '#BAE0C0',
+        }}
+      >
+        Listeners: {item.listeners || 'N/A'}
+      </Text>
+    </div>
+  }
+/>
             </List.Item>
           )}
         />

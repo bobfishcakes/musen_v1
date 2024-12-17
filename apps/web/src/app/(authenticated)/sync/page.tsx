@@ -1,10 +1,15 @@
 'use client'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { PageLayout } from '@web/layouts/Page.layout'
 import { Button, Card } from 'antd'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+
+library.add(faPlay, faPause)
 
 interface GameInfo {
   id: string
@@ -34,6 +39,13 @@ const TimeButton = styled.button`
   &:hover {
     background-color: #3A5241;
   }
+`;
+
+const FontAwesomeButton = styled(TimeButton)`
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const StyledRangeInput = styled.input`
@@ -179,7 +191,7 @@ const Timer: React.FC<TimerProps> = ({ initialTime, maxTime, onTimeChange, onPau
   const timeButtons: TimeButtonConfig[] = [
     { label: '-10s', change: -10 },
     { label: '-1s', change: -1 },
-    { label: isPaused ? '▶️' : '⏸️', change: 'pause' },
+    { label: '', change: 'pause' }, // Empty label since we're using FontAwesome
     { label: '+1s', change: 1 },
     { label: '+10s', change: 10 }
   ];
@@ -226,43 +238,19 @@ const Timer: React.FC<TimerProps> = ({ initialTime, maxTime, onTimeChange, onPau
         marginBottom: '1.5rem'
       }}>
 {timeButtons.map((btn) => (
-  btn.change === 'pause' ? (
-    <PlayButtonContainer key={btn.label} onClick={() => handleTimeButtonClick(btn)}>
-      <PlaySVG
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 213.7 213.7"
-      >
-        <polygon
-          className="triangle"
-          fill="none"
-          strokeWidth="7"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeMiterlimit="10"
-          points="73.5,62.5 148.5,105.8 73.5,149.1"
-        />
-        <circle
-          className="circle"
-          fill="none"
-          strokeWidth="7"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeMiterlimit="10"
-          cx="106.8"
-          cy="106.8"
-          r="103.3"
-        />
-      </PlaySVG>
-    </PlayButtonContainer>
-  ) : (
-    <TimeButton
-      key={btn.label}
-      onClick={() => handleTimeButtonClick(btn)}
-    >
-      {btn.label}
-    </TimeButton>
-  )
+  <FontAwesomeButton
+    key={btn.label}
+    onClick={() => handleTimeButtonClick(btn)}
+  >
+    {btn.change === 'pause' ? (
+      <FontAwesomeIcon 
+  icon={isPaused ? faPlay : faPause} 
+  style={{ fontSize: '20px' }}
+/>
+    ) : (
+      btn.label
+    )}
+  </FontAwesomeButton>
 ))}
       </div>
 
@@ -328,18 +316,23 @@ const StyledCard = styled(Card)`
 `;
 
 const ContinueButton = styled(Button)`
-  background-color: #3A5241;
-  border-color: #3A5241;
+  background-color: ${props => props.disabled ? '#808080' : '#3A5241'};
+  border-color: ${props => props.disabled ? '#808080' : '#3A5241'};
   height: auto;
   padding: 12px 40px;
   font-size: 1.2rem;
 
   &:hover {
-    background-color: #2A3E31 !important;
-    border-color: #2A3E31 !important;
+    background-color: ${props => props.disabled ? '#808080' : '#2A3E31'} !important;
+    border-color: ${props => props.disabled ? '#808080' : '#2A3E31'} !important;
+  }
+
+  &:disabled {
+    background-color: #808080 !important;
+    border-color: #808080 !important;
+    cursor: not-allowed;
   }
 `;
-
 
 
 export default function SyncPage() {

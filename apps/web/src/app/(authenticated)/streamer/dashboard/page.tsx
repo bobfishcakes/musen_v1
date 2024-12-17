@@ -52,15 +52,22 @@ const globalStyle = `
   }
   .ant-select-item {
     color: white !important;
+    margin-bottom: 6px !important;  // Add spacing between items
+  }
+  .ant-select-item-option {
+    background-color: #4A4A4A !important;  // Default background color for non-hovered items
   }
   .ant-select-item-option-selected,
   .ant-select-item-option-active {
-    background-color: #3A5241 !important;  // Green when selected/hovered
+    background-color: #3A5241 !important;  // Darker green when selected/hovered
   }
   .ant-select-selector {
     background-color: #1e1e1e !important;  // Gray background
     color: white !important;
     border: none !important;
+  }
+  .ant-select-dropdown-menu-item:last-child {
+    margin-bottom: 0 !important;  // Remove margin from last item
   }
 `;
 
