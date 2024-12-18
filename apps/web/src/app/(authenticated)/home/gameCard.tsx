@@ -12,6 +12,25 @@ interface GameCardProps {
   onNavigate: (gameId: string, game: Game) => void;
 }
 
+const statusMap = {
+  NS: "Not Started",
+  Q1: "1st Quarter",
+  Q2: "2nd Quarter",
+  Q3: "3rd Quarter",
+  Q4: "4th Quarter",
+  OT: "Overtime",
+  BT: "Break",
+  HT: "Halftime",
+  FT: "Final",
+  AOT: "After Over Time",
+  POST: "Game Postponed",
+  CANC: "Game Cancelled",
+  SUSP: "Game Suspended",
+  AWD: "Game Awarded",
+  ABD: "Game Abandoned"
+};
+
+
 const StyledCard = styled.div`
   padding: 24px; 
   background: #3e3e3e;
@@ -36,6 +55,7 @@ const ContentContainer = styled.div`
   text-align: center;
   width: 100%;
   height: 100%;
+  margin-left: 50px;
 `;
 
 const TeamScore = styled.div`
@@ -46,32 +66,48 @@ const TeamScore = styled.div`
   margin-bottom: 10px;
 `;
 
-const Logo = styled.img`
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  
-font-size: 10px;
-color: white;
-opacity: 0.7;
-&::before {
-    content: attr(alt);
-}
-`;
-
-const Score = styled.span`
+const ScoreLeft = styled.span`
   font-size: 30px;
   font-weight: 600;
   min-width: 24px; 
   text-align: center;
+  margin-left: 100px;
+`;
+
+const ScoreRight = styled.span`
+  font-size: 30px;
+  font-weight: 600;
+  min-width: 24px; 
+  text-align: center;
+  margin-right: 100px;
 `;
 
 const Title = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
   font-size: 18px;
-  margin-bottom: 8px;
+`;
+
+const TeamLeft = styled.span`
+  flex: 1;
+  text-align: center;
+`;
+
+const TeamRight = styled.span`
+  flex: 1;
+  text-align: center;
+`;
+
+const Separator = styled.span`
+  flex: 0;
+  padding: 0 4px;
 `;
 
 const Description = styled.div`
+  margin-top: 4px;
   font-size: 16px;
   color: #BAE0C0;
   align-items: center;
@@ -112,12 +148,13 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listen
   return (
     <StyledCard onClick={() => onNavigate(game.id, game)}>
       <TeamScore>
-          {/* <Logo src={game.teams.away.logo} alt={game.teams.away.name} /> */}
-          <Score>{game.scores?.away.total || 0}</Score>
+          <ScoreLeft>{game.scores?.away.total || 0}</ScoreLeft>
         </TeamScore>
       <ContentContainer>
         <Title>
-          {game.teams.away.name} @ {game.teams.home.name}
+          <TeamLeft>{game.teams.away.name}</TeamLeft>
+          <Separator>-</Separator>
+          <TeamRight>{game.teams.home.name}</TeamRight>
         </Title>
         <Description>
         {!game.status ? 'Status unavailable' : 
@@ -130,25 +167,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listen
                     .format('h:mm A [CT]')
                 : 'Time TBD'
           ) : (
-            <div>{game.status?.long || 'Status unavailable'}</div>
+            <div>{statusMap[game.status.short] || 'Status unavailable'}</div>
           )}
         </Description>
       </ContentContainer>
         <TeamScore>
-          <Score>{game.scores?.home.total || 0}</Score>
+          <ScoreRight>{game.scores?.home.total || 0}</ScoreRight>
           {/* <Logo src={game.teams.home.logo} alt={game.teams.home.name} /> */}
         </TeamScore>
         <StreamContainer>
   <div>
     <StreamData>
-      <FontAwesomeIcon icon={faBroadcastTower} />
+      <FontAwesomeIcon icon={faBroadcastTower }  style={{ color: '#c1dfc2' }} />
       <span>{streamers ? streamers : 0}</span>
     </StreamData>
     <StreamLabel>streams</StreamLabel>
   </div>
   <div>
     <StreamData>
-      <FontAwesomeIcon icon={faRadio} />
+      <FontAwesomeIcon icon={faRadio}  style={{ color: '#c1dfc2' }} />
       <span>{listeners ? listeners : 0}</span>
     </StreamData>
     <StreamLabel>listeners</StreamLabel>

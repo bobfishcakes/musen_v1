@@ -1,4 +1,4 @@
-import { InstagramOutlined, LinkedinOutlined, TwitterOutlined, YoutubeOutlined } from '@ant-design/icons'
+import { GlobalOutlined, InstagramOutlined, LinkedinOutlined, XOutlined } from '@ant-design/icons'
 import { Flex, Layout } from 'antd'
 import React from 'react'
 
@@ -19,12 +19,12 @@ const socialLinks: SocialLink[] = [
         url: 'https://www.linkedin.com/company/musen-sports'
     },
     {
-        icon: <TwitterOutlined style={{ fontSize: '24px', color: 'white' }} />,
-        url: 'https://musen.framer.website'
+        icon: <XOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://x.com/musen_sports'
     },
     {
-        icon: <YoutubeOutlined style={{ fontSize: '24px', color: 'white' }} />,
-        url: 'https://www.youtube.com/watch?v=Ti4sqG85FU4'
+        icon: <GlobalOutlined style={{ fontSize: '24px', color: 'white' }} />,
+        url: 'https://musen.framer.website'
     },
 ]
 
