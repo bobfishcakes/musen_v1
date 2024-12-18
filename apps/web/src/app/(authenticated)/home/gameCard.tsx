@@ -13,7 +13,7 @@ interface GameCardProps {
 }
 
 const statusMap = {
-  NS: "Not Started",
+  NS: "Upcoming",
   Q1: "1st Quarter",
   Q2: "2nd Quarter",
   Q3: "3rd Quarter",
@@ -22,17 +22,17 @@ const statusMap = {
   BT: "Break",
   HT: "Halftime",
   FT: "Final",
-  AOT: "After Over Time",
-  POST: "Game Postponed",
-  CANC: "Game Cancelled",
-  SUSP: "Game Suspended",
-  AWD: "Game Awarded",
-  ABD: "Game Abandoned"
+  AOT: "After OT",
+  POST: "Postponed",
+  CANC: "Cancelled",
+  SUSP: "Suspended",
+  AWD: "Awarded",
+  ABD: "Abandoned"
 };
 
 
 const StyledCard = styled.div`
-  padding: 24px; 
+  padding: 20px 12px; 
   background: #3e3e3e;
   border-radius: 12px;
   margin-bottom: 20px; 
@@ -61,25 +61,12 @@ const ContentContainer = styled.div`
 const TeamScore = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 90px; 
-  margin-bottom: 10px;
 `;
 
-const ScoreLeft = styled.span`
-  font-size: 30px;
+const Score = styled.span`
+  font-size: 24px;
   font-weight: 600;
-  min-width: 24px; 
   text-align: center;
-  margin-left: 100px;
-`;
-
-const ScoreRight = styled.span`
-  font-size: 30px;
-  font-weight: 600;
-  min-width: 24px; 
-  text-align: center;
-  margin-right: 100px;
 `;
 
 const Title = styled.div`
@@ -87,37 +74,35 @@ const Title = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 8px;
   font-size: 18px;
 `;
 
-const TeamLeft = styled.span`
+const Team= styled.span`
   flex: 1;
   text-align: center;
-`;
-
-const TeamRight = styled.span`
-  flex: 1;
-  text-align: center;
+  width: 100%;
 `;
 
 const Separator = styled.span`
-  flex: 0;
-  padding: 0 4px;
+  padding: 12px;
 `;
 
-const Description = styled.div`
-  margin-top: 4px;
+const Status = styled.div`
+  min-height: 10px;
+  width: 25%;
   font-size: 16px;
   color: #BAE0C0;
   align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-right: 50px;
 `;
 
 const StreamContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 24px;
-  margin-left: auto;
+  margin-left: 50px;
   align-items: center;
 `;
 
@@ -147,17 +132,8 @@ const StreamLabel = styled.div`
 const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listeners }) => {
   return (
     <StyledCard onClick={() => onNavigate(game.id, game)}>
-      <TeamScore>
-          <ScoreLeft>{game.scores?.away.total || 0}</ScoreLeft>
-        </TeamScore>
-      <ContentContainer>
-        <Title>
-          <TeamLeft>{game.teams.away.name}</TeamLeft>
-          <Separator>-</Separator>
-          <TeamRight>{game.teams.home.name}</TeamRight>
-        </Title>
-        <Description>
-        {!game.status ? 'Status unavailable' : 
+       <Status>
+        {!game.status ? 'Unavailable' : 
           game.status.short === 'NS' ? (
             game.date
               ? dayjs(game.date).tz('America/Chicago').format('h:mm A [CT]')
@@ -167,30 +143,39 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listen
                     .format('h:mm A [CT]')
                 : 'Time TBD'
           ) : (
-            <div>{statusMap[game.status.short] || 'Status unavailable'}</div>
+            <div>{statusMap[game.status.short]}</div>
           )}
-        </Description>
+        </Status>
+      <TeamScore>
+          <Score>{game.scores?.away.total || 0}</Score>
+        </TeamScore>
+      <ContentContainer>
+        <Title>
+          <Team>{game.teams.away.name}</Team>
+          <Separator>-</Separator>
+          <Team>{game.teams.home.name}</Team>
+        </Title>
       </ContentContainer>
         <TeamScore>
-          <ScoreRight>{game.scores?.home.total || 0}</ScoreRight>
-          {/* <Logo src={game.teams.home.logo} alt={game.teams.home.name} /> */}
+          <Score>{game.scores?.home.total || 0}</Score>
         </TeamScore>
+
         <StreamContainer>
-  <div>
-    <StreamData>
-      <FontAwesomeIcon icon={faBroadcastTower }  style={{ color: '#c1dfc2' }} />
-      <span>{streamers ? streamers : 0}</span>
-    </StreamData>
-    <StreamLabel>streams</StreamLabel>
-  </div>
-  <div>
-    <StreamData>
-      <FontAwesomeIcon icon={faRadio}  style={{ color: '#c1dfc2' }} />
-      <span>{listeners ? listeners : 0}</span>
-    </StreamData>
-    <StreamLabel>listeners</StreamLabel>
-  </div>
-</StreamContainer>
+        <div>
+          <StreamData>
+            <FontAwesomeIcon icon={faBroadcastTower }  style={{ color: '#c1dfc2' }} />
+            <span>{streamers ? streamers : 0}</span>
+          </StreamData>
+          <StreamLabel>streams</StreamLabel>
+        </div>
+        <div>
+          <StreamData>
+            <FontAwesomeIcon icon={faRadio}  style={{ color: '#c1dfc2' }} />
+            <span>{listeners ? listeners : 0}</span>
+          </StreamData>
+          <StreamLabel>listeners</StreamLabel>
+        </div>
+      </StreamContainer>
     </StyledCard>
   );
 };
