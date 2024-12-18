@@ -14,6 +14,7 @@ import utc from 'dayjs/plugin/utc'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+import BackgroundLayer from './BackgroundLayer'
 import GameCard from './gameCard'
 import { Game } from './interfaces'
 import { mockNbaGames, mockNcaaBasketballGames, mockNcaaFootballGames, mockNflGames } from './mockData'
@@ -190,6 +191,7 @@ const GameList = ({ games, icon }: { games: Game[]; icon: any }) => (
   return (
     <PageLayout layout="narrow">
       <MusenTitle></MusenTitle>
+      <BackgroundLayer />
       {nflGames.length > 0 && (
         <Row gutter={16}>
           <Col span={24}>

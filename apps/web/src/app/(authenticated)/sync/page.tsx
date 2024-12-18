@@ -258,7 +258,7 @@ const Timer: React.FC<TimerProps> = ({ initialTime, maxTime, onTimeChange, onPau
         position: 'relative',
         height: '80px',
         width: '300px',
-        backgroundColor: '#3A5241',
+        backgroundColor: 'grey',
         borderRadius: '8px',
         display: 'flex',
         justifyContent: 'center',
@@ -286,17 +286,18 @@ const QuarterButton = styled.div<{ selected: boolean }>`
   transition: background-color 0.2s ease;
   cursor: pointer;
   text-align: center;
-  width: 200px; // Fixed width for all quarter buttons
+  min-width: 100px; // Fixed width for all quarter buttons
+  height: 100%;
 `;
 
 const QuarterTitle = styled.div`
-  font-size: 24px;
+  font-size: 20px;
   color: white;
 `;
 
 const GameTitle = styled.h1`
   color: #ffffff;
-  font-size: 3.5rem;
+  font-size: 3rem;
   margin-bottom: 0.5rem;
 `;
 
