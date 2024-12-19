@@ -1,9 +1,16 @@
 'use client'
 
 import {
+  ApiOutlined // Using ApiOutlined as it represents connectivity
+  ,
+
+
+
+
+
   CommentOutlined,
   DollarOutlined,
-  HeartOutlined,
+  HeartOutlined
 } from '@ant-design/icons'
 import { Api, Model } from '@web/domain'
 import { PageLayout } from '@web/layouts/Page.layout'
@@ -25,6 +32,7 @@ import { UserStatus } from 'apps/web/src/domain/user/user.model'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
+
 
 const cardStyle = {
   opacity: 1.0,
@@ -53,6 +61,7 @@ const buttonHoverStyle = `
 `;
 
 const { Title, Text: TypographyText } = Typography
+
 
 interface GameInfo {
   id: string
@@ -187,6 +196,11 @@ export default function UserStreamPage() {
     fetchStream()
   }, [params.streamId])
 
+  const handleBluetooth = () => {
+    // Add your Bluetooth functionality here
+    enqueueSnackbar('Bluetooth functionality coming soon...', { variant: 'info' });
+  };
+
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return
     try {
@@ -235,46 +249,61 @@ export default function UserStreamPage() {
     <PageLayout layout="narrow">
       <style jsx global>{buttonHoverStyle}</style>
       {pageInfo && (
-        <div>
+        <div style={{ marginTop: '20px' }}> {/* Added top margin to entire container */}
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '16px'
+            alignItems: 'flex-start',
+            marginBottom: '24px'  // Increased margin to move chat box down
           }}>
             <div>
-              <Title level={2}>
+              <Title level={2} style={{ marginBottom: '4px' }}>
                 {pageInfo.streamer.name} - {pageInfo.game.awayTeam} @ {pageInfo.game.homeTeam}
               </Title>
               <TypographyText>
                 Current Listeners: {pageInfo.streamer.listeners}
               </TypographyText>
             </div>
-            <Space>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '12px', 
+              alignItems: 'flex-end',
+              marginTop: '20px'  // Added margin-top to move buttons down
+            }}>
+              <Space>
+                <Button
+                  type={currentView === 'chat' ? 'primary' : 'default'}
+                  onClick={() => setCurrentView('chat')}
+                  style={currentView === 'chat' ? 
+                    {...buttonStyle, backgroundColor: '#3A5241'} : 
+                    buttonStyle
+                  }
+                >
+                  Chat
+                </Button>
+                <Button
+                  type={currentView === 'stats' ? 'primary' : 'default'}
+                  onClick={() => setCurrentView('stats')}
+                  style={currentView === 'stats' ? 
+                    {...buttonStyle, backgroundColor: '#3A5241'} : 
+                    buttonStyle
+                  }
+                >
+                  Stats & Odds
+                </Button>
+              </Space>
               <Button
-                type={currentView === 'chat' ? 'primary' : 'default'}
-                onClick={() => setCurrentView('chat')}
-                style={currentView === 'chat' ? 
-                  {...buttonStyle, backgroundColor: '#3A5241'} : 
-                  buttonStyle
-                }
+                style={{...buttonStyle, backgroundColor: '#3A5241'}} // Always green
+                onClick={handleBluetooth}
+                icon={<ApiOutlined style={{ color: 'white' }} />}
               >
-                Chat
+                Connect to a Speaker
               </Button>
-              <Button
-                type={currentView === 'stats' ? 'primary' : 'default'}
-                onClick={() => setCurrentView('stats')}
-                style={currentView === 'stats' ? 
-                  {...buttonStyle, backgroundColor: '#3A5241'} : 
-                  buttonStyle
-                }
-              >
-                Stats & Odds
-              </Button>
-            </Space>
+            </div>
           </div>
-
-          <Row gutter={[16, 16]}>
+  
+          <Row gutter={[16, 16]} style={{ marginTop: '20px' }}> {/* Added margin-top to chat box */}
             <Col span={24}>
               {currentView === 'chat' ? (
                 <Card style={cardStyle}>
@@ -324,45 +353,44 @@ export default function UserStreamPage() {
               )}
             </Col>
           </Row>
-
-
-        <Row gutter={16} style={{ marginTop: '16px' }}>
-          <Col span={12}>
-            <Card title="Want to show support?" style={cardStyle}>
-              <Form layout="inline" onFinish={handleDonationSubmit}>
-                <Space>
-                  <InputNumber
-                    min={1}
-                    value={donationAmount}
-                    onChange={value => setDonationAmount(value ? value : 0)}
-                    placeholder="Amount"
-                  />
-                  <Button
-                    style={buttonStyle}
-                    htmlType="submit"
-                    icon={<DollarOutlined style={{ color: 'white' }} />}
-                  >
-                    Donate
-                  </Button>
-                </Space>
-              </Form>
-            </Card>
-          </Col>
-
-          <Col span={12}>
-            <Card title="Want exclusive content?" style={cardStyle}>
-              <Button
-                style={{...buttonStyle, width: '100%'}}
-                icon={<HeartOutlined style={{ color: 'white' }} />}
-                onClick={handleSubscribe}
-              >
-                Subscribe to {pageInfo.streamer.name}
-              </Button>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    )}
-  </PageLayout>
+  
+          <Row gutter={16} style={{ marginTop: '16px' }}>
+            <Col span={12}>
+              <Card title="Want to show support?" style={cardStyle}>
+                <Form layout="inline" onFinish={handleDonationSubmit}>
+                  <Space>
+                    <InputNumber
+                      min={1}
+                      value={donationAmount}
+                      onChange={value => setDonationAmount(value ? value : 0)}
+                      placeholder="Amount"
+                    />
+                    <Button
+                      style={buttonStyle}
+                      htmlType="submit"
+                      icon={<DollarOutlined style={{ color: 'white' }} />}
+                    >
+                      Donate
+                    </Button>
+                  </Space>
+                </Form>
+              </Card>
+            </Col>
+  
+            <Col span={12}>
+              <Card title="Want exclusive content?" style={cardStyle}>
+                <Button
+                  style={{...buttonStyle, width: '100%'}}
+                  icon={<HeartOutlined style={{ color: 'white' }} />}
+                  onClick={handleSubscribe}
+                >
+                  Subscribe to {pageInfo.streamer.name}
+                </Button>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
+    </PageLayout>
   );
 }

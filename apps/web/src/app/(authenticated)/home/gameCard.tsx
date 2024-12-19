@@ -74,13 +74,15 @@ const Title = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  font-size: 18px;
+  font-size: 18px;  // Increased from 18px
 `;
 
-const Team= styled.span`
+const Team = styled.span`
   flex: 1;
   text-align: center;
   width: 100%;
+  font-size: 18px;  // Added explicit font size
+  font-weight: 600;  // Added font weight to make it more prominent
 `;
 
 const Separator = styled.span`
@@ -164,14 +166,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, onNavigate, streamers, listen
         <div>
           <StreamData>
             <FontAwesomeIcon icon={faBroadcastTower }  style={{ color: '#c1dfc2' }} />
-            <span>{streamers ? streamers : 0}</span>
+            <span>{streamers ? streamers : game.streamers}</span>
           </StreamData>
           <StreamLabel>streams</StreamLabel>
         </div>
         <div>
           <StreamData>
             <FontAwesomeIcon icon={faRadio}  style={{ color: '#c1dfc2' }} />
-            <span>{listeners ? listeners : 0}</span>
+            <span>{listeners ? listeners : game.listeners}</span>
           </StreamData>
           <StreamLabel>listeners</StreamLabel>
         </div>

@@ -34,6 +34,8 @@ export interface Team {
       short: string;
     };
     scores?: Scores
+    streamers?: number;    // Add this line
+    listeners?: number;    // Add this line
   }
 
   export interface Scores {

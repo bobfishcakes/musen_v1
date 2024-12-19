@@ -15,6 +15,21 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 
+const buttonStyle = {
+  backgroundColor: '#3e3e3e',
+  color: 'white',
+  border: 'none',
+  transition: 'background-color 0.2s ease',
+};
+
+const buttonHoverStyle = `
+  .ant-btn:hover {
+    background-color: #3A5241 !important;
+    border-color: #3A5241 !important;
+    color: white !important;
+  }
+`;
+
 const cardStyle = {
   opacity: 1.0,
   backgroundColor: '#1e1e1e',
@@ -142,6 +157,7 @@ export default function StreamerLiveFeedPage() {
   const authentication = useAuthentication()
   const userId = authentication.user?.id
   const { enqueueSnackbar } = useSnackbar()
+  const [currentView, setCurrentView] = useState<'chat' | 'stats'>('chat');
 
   const [comments, setComments] = useState<Model.Comment[]>(initialComments)
   const [earnings, setEarnings] = useState<Model.Earning[]>(initialEarnings)
