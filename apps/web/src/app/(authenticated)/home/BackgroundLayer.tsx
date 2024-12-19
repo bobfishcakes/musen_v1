@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 const BackgroundContainer = styled.div`
   position: fixed;
-  top: 200px;
-  left: -100px;;
+  top: 150px;
+  left: -50px;
   width: 100%;
   height: 50%;
   z-index: 0;

@@ -46,14 +46,14 @@ const MusenTitle: React.FC = () => {
             }}
           >
             <Image
-              src="/musen_logo.png"
+              src="/musen_logo.gif"
               alt="Musen Logo"
               preview={false}
               style={{
                 height: 'clamp(150px, 25vw, 250px)',
                 width: 'auto',
                 objectFit: 'contain',
-                marginLeft: '15px',
+                marginLeft: '0px',
                 zIndex: 1,
               }}
             />

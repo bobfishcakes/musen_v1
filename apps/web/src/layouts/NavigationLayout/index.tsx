@@ -151,7 +151,7 @@ export const NavigationLayout: React.FC<Props> = ({ children }) => {
               }}
             >
               {children}
-            <BottomBar style={{ marginTop: 'auto', width: '100%' }} />
+            <BottomBar style={{ marginTop: 'auto', width: '100%', zIndex: 1 }} />
             </Col>
           </Col>
         </Row>
